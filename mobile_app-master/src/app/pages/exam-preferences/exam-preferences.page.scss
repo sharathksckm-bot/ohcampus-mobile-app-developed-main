@@ -1,0 +1,207 @@
+.preferences-content {
+  --background: var(--ion-color-light);
+}
+
+.preferences-header {
+  text-align: center;
+  padding: 32px 24px 24px;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+  color: white;
+  
+  .header-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 32px;
+    }
+  }
+  
+  h1 {
+    margin: 0 0 8px 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.4;
+  }
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 16px;
+  padding: 14px;
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  border-radius: 12px;
+  border-left: 4px solid var(--ion-color-primary);
+  
+  ion-icon {
+    font-size: 22px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ion-color-dark);
+    line-height: 1.5;
+  }
+}
+
+.exam-selection {
+  padding: 0 16px;
+  
+  h3 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+}
+
+.exam-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exam-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+  
+  &.selected {
+    border-color: var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.05);
+    
+    .exam-checkbox ion-icon {
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  .exam-checkbox {
+    ion-icon {
+      font-size: 26px;
+      color: var(--ion-color-medium);
+    }
+  }
+  
+  .exam-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    
+    ion-icon {
+      font-size: 22px;
+      color: white;
+    }
+    
+    &.kcet_2024 {
+      background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+    }
+    
+    &.neet_2024 {
+      background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+    }
+    
+    &.jee_main_2024 {
+      background: linear-gradient(135deg, #f9c74f 0%, #f08c00 100%);
+    }
+  }
+  
+  .exam-details {
+    flex: 1;
+    
+    h4 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ion-color-dark);
+    }
+    
+    p {
+      margin: 0 0 4px 0;
+      font-size: 12px;
+      color: var(--ion-color-medium);
+    }
+    
+    .question-count {
+      font-size: 11px;
+      color: var(--ion-color-primary);
+      font-weight: 500;
+    }
+  }
+}
+
+.selection-summary {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  
+  ion-chip {
+    --background: rgba(var(--ion-color-primary-rgb), 0.1);
+    font-weight: 600;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  
+  ion-spinner {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+.action-buttons {
+  padding: 24px 16px;
+  
+  ion-button {
+    margin-bottom: 10px;
+    --border-radius: 12px;
+    font-weight: 600;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

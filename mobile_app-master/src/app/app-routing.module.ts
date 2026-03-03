@@ -235,11 +235,67 @@ redirectTo: '/welcomepage',
   {
     path: 'articalbycat/:blogId',
     loadChildren: () => import('./pages/articalbycat/articalbycat.module').then( m => m.ArticalbycatPageModule)
+  },
+  // ==================== NEW FEATURES ROUTES ====================
+  // Alerts
+  {
+    path: 'alerts',
+    loadChildren: () => import('./pages/alerts/alerts.module').then( m => m.AlertsPageModule)
+  },
+  {
+    path: 'myexams',
+    loadChildren: () => import('./pages/myexams/myexams.module').then( m => m.MyexamsPageModule)
+  },
+  // Mock Tests
+  {
+    path: 'mocktest',
+    loadChildren: () => import('./pages/mocktest/mocktest.module').then( m => m.MocktestPageModule)
+  },
+  {
+    path: 'mocktest-auth',
+    loadChildren: () => import('./pages/mocktest-auth/mocktest-auth.module').then( m => m.MocktestAuthPageModule)
+  },
+  {
+    path: 'test-interface/:testId',
+    loadChildren: () => import('./pages/test-interface/test-interface.module').then( m => m.TestInterfacePageModule)
+  },
+  {
+    path: 'test-result/:testId',
+    loadChildren: () => import('./pages/test-result/test-result.module').then( m => m.TestResultPageModule)
+  },
+  {
+    path: 'test-history',
+    loadChildren: () => import('./pages/test-history/test-history.module').then( m => m.TestHistoryPageModule)
+  },
+  {
+    path: 'leaderboard',
+    loadChildren: () => import('./pages/leaderboard/leaderboard.module').then( m => m.LeaderboardPageModule)
+  },
+  {
+    path: 'exam-preferences',
+    loadChildren: () => import('./pages/exam-preferences/exam-preferences.module').then( m => m.ExamPreferencesPageModule)
+  },
+  {
+    path: 'answer-review/:testId',
+    loadChildren: () => import('./pages/answer-review/answer-review.module').then( m => m.AnswerReviewPageModule)
+  },
+  // Rank Predictor
+  {
+    path: 'rank-predictor',
+    loadChildren: () => import('./pages/rank-predictor/rank-predictor.module').then( m => m.RankPredictorPageModule)
+  },
+  {
+    path: 'rank-predictor-form/:examId',
+    loadChildren: () => import('./pages/rank-predictor-form/rank-predictor-form.module').then( m => m.RankPredictorFormPageModule)
+  },
+  {
+    path: 'rank-predictor-result',
+    loadChildren: () => import('./pages/rank-predictor-result/rank-predictor-result.module').then( m => m.RankPredictorResultPageModule)
+  },
+  {
+    path: 'rank-predictor-history',
+    loadChildren: () => import('./pages/rank-predictor-history/rank-predictor-history.module').then( m => m.RankPredictorHistoryPageModule)
   }
-
-
-
-
 ];
 @NgModule({
   imports: [

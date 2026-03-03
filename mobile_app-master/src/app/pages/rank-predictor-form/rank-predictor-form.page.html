@@ -1,0 +1,118 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="form-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ exam?.exam_name || 'Rank Predictor' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content data-testid="rank-predictor-form-page">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading form...</p>
+  </div>
+
+  <!-- Exam Info Card -->
+  <div class="exam-header" *ngIf="exam && !isLoading">
+    <div class="exam-icon" [style.background-color]="exam.color + '20'">
+      <ion-icon [name]="exam.icon" [style.color]="exam.color"></ion-icon>
+    </div>
+    <div class="exam-details">
+      <h2>{{ exam.exam_name }}</h2>
+      <p>{{ exam.description }}</p>
+      <ion-badge [style.--background]="exam.color">{{ exam.category }}</ion-badge>
+    </div>
+  </div>
+
+  <!-- Input Form -->
+  <div class="form-container" *ngIf="!isLoading && inputFields.length > 0">
+    <div class="form-card">
+      <h3 class="form-title">
+        <ion-icon name="create-outline"></ion-icon>
+        Enter Your Scores
+      </h3>
+      
+      <form (ngSubmit)="submitForm()">
+        <div class="form-field" *ngFor="let field of inputFields">
+          <ion-label>
+            {{ field.field_label }}
+            <span class="required" *ngIf="field.is_required">*</span>
+          </ion-label>
+          
+          <div class="input-wrapper">
+            <ion-input
+              *ngIf="field.field_type === 'number'"
+              type="number"
+              [(ngModel)]="formValues[field.field_name]"
+              [name]="field.field_name"
+              [placeholder]="field.placeholder"
+              [min]="field.min_marks"
+              [max]="field.max_marks"
+              [required]="field.is_required"
+              [attr.data-testid]="'input-' + field.field_name"
+              (ionChange)="validateField(field)"
+            ></ion-input>
+            
+            <ion-select
+              *ngIf="field.field_type === 'select'"
+              [(ngModel)]="formValues[field.field_name]"
+              [name]="field.field_name"
+              [placeholder]="field.placeholder"
+              [attr.data-testid]="'select-' + field.field_name"
+            >
+              <ion-select-option *ngFor="let option of field.options" [value]="option">
+                {{ option }}
+              </ion-select-option>
+            </ion-select>
+            
+            <span class="max-marks" *ngIf="field.field_type === 'number' && field.max_marks">
+              Max: {{ field.max_marks }}
+            </span>
+          </div>
+          
+          <div class="field-error" *ngIf="fieldErrors[field.field_name]">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ fieldErrors[field.field_name] }}
+          </div>
+        </div>
+        
+        <ion-button 
+          expand="block" 
+          type="submit" 
+          [disabled]="!isFormValid() || isSubmitting"
+          data-testid="predict-btn"
+        >
+          <ion-icon name="analytics-outline" slot="start"></ion-icon>
+          {{ isSubmitting ? 'Predicting...' : 'Predict My Rank' }}
+        </ion-button>
+      </form>
+    </div>
+    
+    <!-- Tips Section -->
+    <div class="tips-card">
+      <h4>
+        <ion-icon name="bulb-outline"></ion-icon>
+        Tips for Accurate Prediction
+      </h4>
+      <ul>
+        <li>Enter your actual marks/score as obtained in the exam</li>
+        <li>For board marks, enter the aggregate of relevant subjects only</li>
+        <li>Predictions are based on previous year's data patterns</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && inputFields.length === 0">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <h3>Form Not Available</h3>
+    <p>Input form for this exam is not yet configured</p>
+    <ion-button fill="outline" (click)="goBack()">
+      Go Back
+    </ion-button>
+  </div>
+</ion-content>

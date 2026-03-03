@@ -1,0 +1,335 @@
+.user-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--ion-color-light);
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+// Preferences Banner
+.preferences-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(45, 106, 79, 0.1) 0%, rgba(27, 67, 50, 0.05) 100%);
+  border-bottom: 1px solid rgba(45, 106, 79, 0.2);
+  
+  &.no-prefs {
+    background: linear-gradient(135deg, rgba(0, 131, 220, 0.08) 0%, rgba(0, 131, 220, 0.02) 100%);
+    border-bottom: 1px solid rgba(0, 131, 220, 0.15);
+  }
+  
+  .preferences-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    
+    ion-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .preferences-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      
+      .label {
+        font-size: 12px;
+        color: var(--ion-color-medium);
+        font-weight: 500;
+      }
+      
+      .exams {
+        font-size: 14px;
+        color: var(--ion-color-dark);
+        font-weight: 600;
+      }
+    }
+  }
+  
+  ion-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    font-weight: 600;
+  }
+}
+
+// Stats Card
+.stats-card {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 16px;
+  margin: 0 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: -8px;
+  position: relative;
+  z-index: 1;
+  
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--ion-color-primary);
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// No Results
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 64px;
+    color: var(--ion-color-medium);
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    color: var(--ion-color-dark);
+  }
+  
+  p {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    line-height: 1.5;
+  }
+}
+
+.login-prompt {
+  padding: 16px;
+  
+  ion-card {
+    text-align: center;
+    
+    .login-icon {
+      font-size: 48px;
+      color: var(--ion-color-primary);
+      margin-bottom: 8px;
+    }
+    
+    h3 {
+      margin: 8px 0;
+      color: var(--ion-color-dark);
+    }
+    
+    p {
+      color: var(--ion-color-medium);
+      margin-bottom: 16px;
+    }
+  }
+}
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  overflow-x: auto;
+  
+  ion-button {
+    --border-radius: 20px;
+    font-size: 12px;
+  }
+}
+
+.header-section {
+  padding: 16px;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-primary-shade) 100%);
+  color: white;
+  
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  
+  p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+  }
+}
+
+.exams-list {
+  padding: 16px;
+}
+
+.exam-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  
+  ion-card-header {
+    padding-bottom: 8px;
+  }
+  
+  .exam-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .exam-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 24px;
+      color: white;
+    }
+    
+    &.kcet_2024 {
+      background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+    }
+    
+    &.neet_2024 {
+      background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+    }
+    
+    &.jee_main_2024 {
+      background: linear-gradient(135deg, #f9c74f 0%, #f08c00 100%);
+    }
+  }
+  
+  .exam-title {
+    flex: 1;
+    
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    ion-card-subtitle {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+  }
+  
+  .exam-description {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  
+  .exam-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px;
+    background: var(--ion-color-light);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      
+      ion-icon {
+        font-size: 20px;
+        color: var(--ion-color-primary);
+      }
+      
+      span {
+        font-size: 12px;
+        color: var(--ion-color-dark);
+        font-weight: 500;
+      }
+    }
+  }
+  
+  ion-button {
+    --border-radius: 8px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+  }
+}
+
+.features-section {
+  padding: 16px;
+  background: var(--ion-color-light);
+  
+  h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+  
+  ion-list {
+    background: transparent;
+    
+    ion-item {
+      --background: transparent;
+      --padding-start: 0;
+      margin-bottom: 8px;
+      
+      ion-icon {
+        font-size: 24px;
+        margin-right: 12px;
+      }
+      
+      h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0;
+      }
+      
+      p {
+        font-size: 12px;
+        color: var(--ion-color-medium);
+        margin: 4px 0 0 0;
+      }
+    }
+  }
+}

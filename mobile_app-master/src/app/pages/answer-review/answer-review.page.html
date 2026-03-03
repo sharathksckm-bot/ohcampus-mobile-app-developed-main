@@ -1,0 +1,153 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="review-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Review Answers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="review-content" data-testid="answer-review-page">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading answers...</p>
+  </div>
+
+  <!-- No Data -->
+  <div class="no-data" *ngIf="!isLoading && answers.length === 0">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <h2>No Review Available</h2>
+    <p>Answer review is not available for this test.</p>
+    <ion-button (click)="goToMockTests()">Go to Mock Tests</ion-button>
+  </div>
+
+  <!-- Review Content -->
+  <div class="review-container" *ngIf="!isLoading && answers.length > 0">
+    <!-- Header Info -->
+    <div class="review-header">
+      <h2>{{ exam?.name || 'Mock Test' }}</h2>
+      <p>{{ answers.length }} Questions • Review your answers and learn from explanations</p>
+    </div>
+
+    <!-- Filter Stats -->
+    <div class="filter-stats">
+      <div class="stat-chip" 
+           [class.active]="selectedFilter === 'all'"
+           (click)="filterByStatus('all')"
+           data-testid="filter-all">
+        <span class="count">{{ getFilterCount('all') }}</span>
+        <span class="label">All</span>
+      </div>
+      <div class="stat-chip correct" 
+           [class.active]="selectedFilter === 'correct'"
+           (click)="filterByStatus('correct')"
+           data-testid="filter-correct">
+        <span class="count">{{ getFilterCount('correct') }}</span>
+        <span class="label">Correct</span>
+      </div>
+      <div class="stat-chip incorrect" 
+           [class.active]="selectedFilter === 'incorrect'"
+           (click)="filterByStatus('incorrect')"
+           data-testid="filter-incorrect">
+        <span class="count">{{ getFilterCount('incorrect') }}</span>
+        <span class="label">Wrong</span>
+      </div>
+      <div class="stat-chip unanswered" 
+           [class.active]="selectedFilter === 'unanswered'"
+           (click)="filterByStatus('unanswered')"
+           data-testid="filter-unanswered">
+        <span class="count">{{ getFilterCount('unanswered') }}</span>
+        <span class="label">Skipped</span>
+      </div>
+    </div>
+
+    <!-- Section Filter -->
+    <div class="section-filter">
+      <ion-segment [(ngModel)]="selectedSection" (ionChange)="filterBySection($event.detail.value || 'all')" scrollable>
+        <ion-segment-button value="all">
+          <ion-label>All Sections</ion-label>
+        </ion-segment-button>
+        <ion-segment-button *ngFor="let section of sections" [value]="section">
+          <ion-label>{{ section }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Questions List -->
+    <div class="questions-list">
+      <div *ngFor="let answer of filteredAnswers; let i = index" 
+           class="question-card"
+           [class]="getStatusClass(answer)"
+           [attr.data-testid]="'question-' + getQuestionIndex(answer)">
+        
+        <!-- Question Header -->
+        <div class="question-header">
+          <div class="question-num">
+            <span class="num">Q{{ getQuestionIndex(answer) }}</span>
+            <span class="section">{{ answer.question.section }}</span>
+          </div>
+          <div class="status-badge" [class]="getStatusClass(answer)">
+            <ion-icon [name]="answer.is_correct ? 'checkmark-circle' : (answer.user_answer === null ? 'remove-circle' : 'close-circle')"></ion-icon>
+            <span>{{ getStatusText(answer) }}</span>
+          </div>
+        </div>
+
+        <!-- Question Text -->
+        <div class="question-text">
+          {{ answer.question.question_text }}
+        </div>
+
+        <!-- Options -->
+        <div class="options-list">
+          <div *ngFor="let option of answer.question.options; let j = index"
+               class="option"
+               [class.correct-answer]="j === answer.question.correct_answer"
+               [class.user-wrong]="answer.user_answer === j && !answer.is_correct"
+               [class.user-correct]="answer.user_answer === j && answer.is_correct">
+            <div class="option-marker">
+              <span class="letter">{{ getOptionLabel(j) }}</span>
+              <ion-icon *ngIf="j === answer.question.correct_answer" name="checkmark-circle" class="correct-icon"></ion-icon>
+              <ion-icon *ngIf="answer.user_answer === j && !answer.is_correct" name="close-circle" class="wrong-icon"></ion-icon>
+            </div>
+            <div class="option-text">{{ option }}</div>
+            <div class="option-tags">
+              <span class="tag correct" *ngIf="j === answer.question.correct_answer">Correct Answer</span>
+              <span class="tag user" *ngIf="answer.user_answer === j && answer.user_answer !== answer.question.correct_answer">Your Answer</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explanation -->
+        <div class="explanation" *ngIf="answer.question.explanation">
+          <div class="explanation-header">
+            <ion-icon name="bulb-outline"></ion-icon>
+            <span>Explanation</span>
+          </div>
+          <p>{{ answer.question.explanation }}</p>
+        </div>
+
+        <!-- Question Meta -->
+        <div class="question-meta">
+          <ion-chip [color]="answer.question.difficulty === 'hard' ? 'danger' : answer.question.difficulty === 'medium' ? 'warning' : 'success'" outline size="small">
+            {{ answer.question.difficulty | titlecase }}
+          </ion-chip>
+          <ion-chip color="primary" outline size="small">
+            +{{ answer.question.marks }} / -{{ answer.question.negative_marks }}
+          </ion-chip>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Results After Filter -->
+    <div class="no-filter-results" *ngIf="filteredAnswers.length === 0">
+      <ion-icon name="filter-outline"></ion-icon>
+      <p>No questions match the selected filters</p>
+      <ion-button fill="outline" size="small" (click)="filterByStatus('all'); filterBySection('all')">
+        Clear Filters
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

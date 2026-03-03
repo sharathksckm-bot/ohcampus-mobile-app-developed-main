@@ -1142,3 +1142,393 @@ ion-select::part(placeholder) {
   overflow: hidden;
   margin-bottom: 16px;
 }
+
+
+// ==================== NEW FEATURES STYLES ====================
+
+// Alerts Section
+.alerts-section {
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f4ff 100%);
+  margin-bottom: 16px;
+
+  .alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .alerts-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      h5 { margin: 0; font-weight: 600; color: #1a1a2e; }
+      .alerts-icon { color: #4361ee; font-size: 20px; }
+    }
+
+    .view-all-link {
+      color: #4361ee;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+  }
+
+  .alerts-vertical-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .alert-card-vertical {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    position: relative;
+
+    &.has-link { cursor: pointer; }
+
+    .alert-exam-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #e8f4ff;
+      color: #4361ee;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .alert-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+
+      ion-icon { font-size: 20px; }
+
+      &.alert-registration { background: #e3f2fd; color: #1976d2; }
+      &.alert-counseling { background: #fff3e0; color: #f57c00; }
+      &.alert-result { background: #e8f5e9; color: #388e3c; }
+      &.alert-general { background: #f3e5f5; color: #7b1fa2; }
+    }
+
+    .alert-content {
+      flex: 1;
+      min-width: 0;
+      
+      .alert-title { 
+        margin: 0 0 4px; 
+        font-size: 14px; 
+        font-weight: 600;
+        color: #1a1a2e;
+      }
+      .alert-time { 
+        margin: 0; 
+        font-size: 12px; 
+        color: #888; 
+        display: flex; 
+        align-items: center; 
+        gap: 4px;
+        
+        ion-icon { font-size: 12px; }
+      }
+      .alert-description { 
+        margin: 4px 0 0; 
+        font-size: 12px; 
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .alert-link-icon {
+      color: #ccc;
+      font-size: 16px;
+      margin-left: 8px;
+    }
+  }
+
+  .my-exams-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    margin-top: 12px;
+    cursor: pointer;
+    color: #4361ee;
+    font-size: 13px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+
+    span { flex: 1; }
+  }
+}
+
+// Alerts Setup Card
+.alerts-setup {
+  padding: 16px;
+  
+  .setup-card {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e8f4ff 0%, #f0f7ff 100%);
+    cursor: pointer;
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.1);
+
+    .setup-icon {
+      font-size: 32px;
+      color: #4361ee;
+      margin-right: 12px;
+    }
+
+    .setup-content {
+      flex: 1;
+      
+      h6 { 
+        margin: 0 0 4px; 
+        font-size: 15px; 
+        font-weight: 600;
+        color: #1a1a2e;
+      }
+      p { 
+        margin: 0; 
+        font-size: 12px; 
+        color: #666;
+        line-height: 1.4;
+      }
+    }
+
+    .setup-arrow {
+      color: #4361ee;
+      font-size: 20px;
+    }
+  }
+}
+
+// Mock Test Section
+.mocktest-section {
+  padding: 16px;
+  background: #fff;
+
+  .mocktest-prefs-banner {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    background: #e8f5e9;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    gap: 8px;
+
+    &.no-prefs { background: #e3f2fd; }
+
+    .prefs-text { 
+      flex: 1; 
+      font-size: 13px; 
+      color: #333;
+    }
+    .edit-link { 
+      color: #4361ee; 
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    ion-button {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --padding-top: 4px;
+      --padding-bottom: 4px;
+      font-size: 12px;
+    }
+  }
+
+  .mocktest-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    .mocktest-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      h5 { margin: 0; font-weight: 600; color: #1a1a2e; }
+      .mocktest-icon { color: #4361ee; font-size: 20px; }
+    }
+
+    .view-all-link {
+      color: #4361ee;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .mocktest-cards-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+
+    &::-webkit-scrollbar { display: none; }
+
+    .mocktest-exam-card {
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      border-radius: 12px;
+      margin: 0;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+      &.kcet_2026 { background: linear-gradient(135deg, #e3f2fd, #bbdefb); }
+      &.neet_2026 { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+      &.jee_main_2026 { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+
+      .exam-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        flex-shrink: 0;
+
+        ion-icon { font-size: 20px; color: white; }
+
+        &.kcet_2026 { background: #1976d2; }
+        &.neet_2026 { background: #388e3c; }
+        &.jee_main_2026 { background: #f57c00; }
+      }
+
+      .exam-info {
+        flex: 1;
+        min-width: 0;
+        
+        h6 { 
+          margin: 0 0 4px; 
+          font-size: 14px;
+          font-weight: 600;
+          color: #1a1a2e;
+        }
+        p { 
+          margin: 0; 
+          font-size: 11px; 
+          color: #666;
+        }
+      }
+
+      .arrow {
+        color: #999;
+        font-size: 16px;
+      }
+    }
+  }
+}
+
+// Rank Predictor Section
+.rank-predictor-section {
+  padding: 16px;
+  background: #fafafa;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      h5 { margin: 0; font-weight: 600; color: #1a1a2e; }
+      .section-icon { color: #4361ee; font-size: 20px; }
+    }
+
+    .view-all-link {
+      color: #4361ee;
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+
+  .section-description {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .predictor-cards-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 8px;
+
+    &::-webkit-scrollbar { display: none; }
+
+    .predictor-card {
+      min-width: 140px;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 0;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+      &.kcet { background: linear-gradient(135deg, #e8eaf6, #c5cae9); }
+      &.comedk { background: linear-gradient(135deg, #ede7f6, #d1c4e9); }
+      &.jee { background: linear-gradient(135deg, #fff3e0, #ffe0b2); }
+      &.neet { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); }
+
+      .predictor-badge {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+
+        ion-icon { font-size: 24px; color: white; }
+
+        &.kcet { background: #4361ee; }
+        &.comedk { background: #7c3aed; }
+        &.jee { background: #f59e0b; }
+        &.neet { background: #10b981; }
+      }
+
+      .predictor-info {
+        h6 { 
+          margin: 0 0 4px; 
+          font-size: 14px; 
+          font-weight: 600;
+          color: #1a1a2e;
+        }
+        p { 
+          margin: 0; 
+          font-size: 11px; 
+          color: #666;
+        }
+      }
+    }
+  }
+}
+
+// ==================== END NEW FEATURES STYLES ====================

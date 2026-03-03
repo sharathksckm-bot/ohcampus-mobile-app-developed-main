@@ -21,7 +21,8 @@
 <ion-content [fullscreen]="true">
 
   <div>
-    <div>
+    <!-- Course Tabs - Hidden as per requirement -->
+    <!-- <div>
       <ion-item lines="none" style="--padding-start: 6px;">
         <ion-segment [scrollable]="true" (ionChange)="segmentChangede($event,2)" [(ngModel)]="segmentBtn">
           <ion-segment-button *ngFor="let item of coursesArray" value="{{item.id}}"
@@ -31,7 +32,164 @@
           </ion-segment-button>
         </ion-segment>
       </ion-item>
+    </div> -->
+
+    <!-- ==================== EXAMS & COUNSELING ALERTS SECTION ==================== -->
+    <div class="alerts-section" *ngIf="examAlerts && examAlerts.length > 0" data-testid="alerts-section">
+      <div class="alerts-header">
+        <div class="alerts-title">
+          <ion-icon name="notifications" class="alerts-icon"></ion-icon>
+          <h5>Exams & Counseling Alerts</h5>
+        </div>
+        <span class="view-all-link" (click)="viewAllAlerts()" data-testid="view-all-alerts-btn">View all</span>
+      </div>
+      
+      <!-- Alert Cards - Vertical Scrolling (Show all alerts, scrollable) -->
+      <div class="alerts-vertical-scroll">
+        <ion-card *ngFor="let alert of examAlerts; let i = index"
+                  class="alert-card-vertical" 
+                  [class.has-link]="alert.hyperlink" 
+                  (click)="openAlertLink(alert)" 
+                  [attr.data-testid]="'home-alert-' + i">
+          <!-- Exam Tag Badge at top right -->
+          <div class="alert-exam-tag" *ngIf="alert.examTags && alert.examTags.length > 0">
+            {{alert.examTags[0]}}
+          </div>
+          <div class="alert-badge" [ngClass]="getAlertTypeClass(alert)">
+            <ion-icon [name]="getAlertIcon(alert)"></ion-icon>
+          </div>
+          <div class="alert-content">
+            <h6 class="alert-title">{{alert.title}}</h6>
+            <p class="alert-time">
+              <ion-icon name="time-outline"></ion-icon>
+              {{formatAlertDate(alert.timestamp)}}
+            </p>
+            <p class="alert-description" *ngIf="alert.description">{{alert.description}}</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" *ngIf="alert.hyperlink" class="alert-link-icon"></ion-icon>
+        </ion-card>
+      </div>
+      
+      <!-- My Exams Link -->
+      <div class="my-exams-link" (click)="goToMyExams()" data-testid="my-exams-link">
+        <ion-icon name="settings-outline"></ion-icon>
+        <span>Customize alerts based on your exams</span>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
     </div>
+
+    <!-- No Alerts - Show setup prompt -->
+    <div class="alerts-setup" *ngIf="(!examAlerts || examAlerts.length === 0) && showAlertsSetup" data-testid="alerts-setup">
+      <ion-card class="setup-card" (click)="goToMyExams()">
+        <ion-icon name="notifications-outline" class="setup-icon"></ion-icon>
+        <div class="setup-content">
+          <h6>Get Personalized Exam Alerts</h6>
+          <p>Set up your exam preferences to receive relevant updates about registrations, counseling, and more.</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="setup-arrow"></ion-icon>
+      </ion-card>
+    </div>
+    <!-- ==================== END ALERTS SECTION ==================== -->
+
+    <!-- ==================== MOCK TEST SECTION ==================== -->
+    <div class="mocktest-section" data-testid="mocktest-section">
+      <!-- Preferences Banner -->
+      <div class="mocktest-prefs-banner" *ngIf="hasExamPreferences" (click)="goToExamPreferences()" data-testid="mocktest-prefs-banner">
+        <ion-icon name="checkmark-circle" color="success"></ion-icon>
+        <span class="prefs-text">{{ preferredExamNames }}</span>
+        <span class="edit-link">Edit</span>
+      </div>
+      <div class="mocktest-prefs-banner no-prefs" *ngIf="!hasExamPreferences" (click)="goToExamPreferences()" data-testid="mocktest-set-prefs-banner">
+        <ion-icon name="options-outline" color="primary"></ion-icon>
+        <span class="prefs-text">Set Your Exam Preferences</span>
+        <ion-button size="small" fill="solid" color="primary">Set</ion-button>
+      </div>
+
+      <!-- Mock Tests Header -->
+      <div class="mocktest-header">
+        <div class="mocktest-title">
+          <ion-icon name="document-text" class="mocktest-icon"></ion-icon>
+          <h5>{{ hasExamPreferences ? 'My Mock Tests' : 'Mock Tests' }}</h5>
+        </div>
+        <span class="view-all-link" (click)="goToMockTests()" data-testid="view-all-mocktests">View all</span>
+      </div>
+
+      <!-- Filtered Exam Cards -->
+      <div class="mocktest-cards-scroll" *ngIf="filteredMockExams && filteredMockExams.length > 0">
+        <ion-card *ngFor="let exam of filteredMockExams" 
+                  class="mocktest-exam-card" 
+                  [ngClass]="exam.exam_id"
+                  (click)="goToMockTestExam(exam.exam_id)"
+                  [attr.data-testid]="'home-exam-' + exam.exam_id">
+          <div class="exam-badge" [ngClass]="exam.exam_id">
+            <ion-icon [name]="getMockTestIcon(exam.exam_id)"></ion-icon>
+          </div>
+          <div class="exam-info">
+            <h6>{{ exam.name }}</h6>
+            <p>{{ exam.total_questions }} Questions • {{ exam.duration_minutes }} mins</p>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="arrow"></ion-icon>
+        </ion-card>
+      </div>
+    </div>
+    <!-- ==================== END MOCK TEST SECTION ==================== -->
+
+    <!-- ==================== RANK PREDICTOR SECTION ==================== -->
+    <div class="rank-predictor-section" data-testid="rank-predictor-section">
+      <div class="section-header">
+        <div class="section-title">
+          <ion-icon name="analytics-outline" class="section-icon"></ion-icon>
+          <h5>Rank Predictor</h5>
+        </div>
+        <span class="view-all-link" (click)="goToRankPredictor()" data-testid="view-all-rank-predictor">View all</span>
+      </div>
+      
+      <p class="section-description">Predict your exam rank based on your scores</p>
+      
+      <div class="predictor-cards-scroll">
+        <ion-card class="predictor-card kcet" (click)="goToRankPredictorExam(1)" data-testid="predictor-kcet">
+          <div class="predictor-badge kcet">
+            <ion-icon name="school-outline"></ion-icon>
+          </div>
+          <div class="predictor-info">
+            <h6>KCET</h6>
+            <p>Karnataka CET</p>
+          </div>
+        </ion-card>
+        
+        <ion-card class="predictor-card comedk" (click)="goToRankPredictorExam(2)" data-testid="predictor-comedk">
+          <div class="predictor-badge comedk">
+            <ion-icon name="build-outline"></ion-icon>
+          </div>
+          <div class="predictor-info">
+            <h6>COMEDK</h6>
+            <p>Engineering</p>
+          </div>
+        </ion-card>
+        
+        <ion-card class="predictor-card jee" (click)="goToRankPredictorExam(3)" data-testid="predictor-jee">
+          <div class="predictor-badge jee">
+            <ion-icon name="rocket-outline"></ion-icon>
+          </div>
+          <div class="predictor-info">
+            <h6>JEE Main</h6>
+            <p>Engineering</p>
+          </div>
+        </ion-card>
+        
+        <ion-card class="predictor-card neet" (click)="goToRankPredictorExam(5)" data-testid="predictor-neet">
+          <div class="predictor-badge neet">
+            <ion-icon name="medkit-outline"></ion-icon>
+          </div>
+          <div class="predictor-info">
+            <h6>NEET UG</h6>
+            <p>Medical</p>
+          </div>
+        </ion-card>
+      </div>
+    </div>
+    <!-- ==================== END RANK PREDICTOR SECTION ==================== -->
+
     <h5 *ngIf="getCollegeList" style="margin: 10px 10px 2px;">Top 20 {{crsname}} colleges you might like</h5>
 
     <p style="margin: 0px 10px 12px;">Based on your preferences<span class="seteditspan"

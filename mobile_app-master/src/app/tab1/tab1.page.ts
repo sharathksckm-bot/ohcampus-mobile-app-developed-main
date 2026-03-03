@@ -15,6 +15,8 @@ import { FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, startWith, tap } from 'rxjs/operators';
 import { ShortlistService } from '../services/shortlist.service';
+import { MocktestService, Exam } from '../services/mocktest.service';
+import { RankPredictorService } from '../services/rank-predictor.service';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx'; 
 @Component({
   selector: 'app-tab1',
@@ -121,6 +123,17 @@ export class Tab1Page implements OnInit {
   endlimit: any;
   isLoading = false;
 
+  // ==================== NEW FEATURES PROPERTIES ====================
+  // Alerts
+  examAlerts: any[] = [];
+  showAlertsSetup: boolean = true;
+
+  // Mock Tests
+  filteredMockExams: Exam[] = [];
+  hasExamPreferences: boolean = false;
+  preferredExamNames: string = '';
+  // ==================== END NEW FEATURES PROPERTIES ====================
+
 
   constructor(
     private iab: InAppBrowser,
@@ -129,7 +142,9 @@ export class Tab1Page implements OnInit {
     private platform: Platform, 
     private alertController: AlertController, private googlePlus: GooglePlus,
     private modalController: ModalController,
-    private shortlistService: ShortlistService
+    private shortlistService: ShortlistService,
+    private mocktestService: MocktestService,
+    private rankPredictorService: RankPredictorService
   ) {
      this.getfooterNotification()
     this.feesForm = this.formBuilder.group({
@@ -231,6 +246,10 @@ console.log(this.maincat);
     this.shortlistService.shortlist$.subscribe((shortlist) => {
       this.shortlistedColleges = shortlist;
     });
+
+    // Load new features data
+    this.loadExamAlerts();
+    this.loadMockTests();
   }
 
 
@@ -1368,4 +1387,111 @@ handleQuestionPaperClick(exam)
       console.log('Loading completed');
     }, 1500); 
   }
+
+  // ==================== NEW FEATURES METHODS ====================
+
+  // ==================== ALERTS METHODS ====================
+  loadExamAlerts(): void {
+    // Load alerts from service or API
+    this.service.getExamAlerts().subscribe(
+      (res: any) => {
+        this.examAlerts = res || [];
+      },
+      (error: any) => {
+        console.error('Error loading alerts:', error);
+        this.examAlerts = [];
+      }
+    );
+  }
+
+  viewAllAlerts(): void {
+    this.router.navigate(['/alerts']);
+  }
+
+  openAlertLink(alert: any): void {
+    if (alert.hyperlink) {
+      this.iab.create(alert.hyperlink, '_system');
+    }
+  }
+
+  goToMyExams(): void {
+    this.router.navigate(['/myexams']);
+  }
+
+  getAlertTypeClass(alert: any): string {
+    const typeClasses: { [key: string]: string } = {
+      'registration': 'alert-registration',
+      'counseling': 'alert-counseling',
+      'result': 'alert-result',
+      'general': 'alert-general'
+    };
+    return typeClasses[alert.type] || 'alert-general';
+  }
+
+  getAlertIcon(alert: any): string {
+    const icons: { [key: string]: string } = {
+      'registration': 'create-outline',
+      'counseling': 'people-outline',
+      'result': 'ribbon-outline',
+      'general': 'information-circle-outline'
+    };
+    return icons[alert.type] || 'notifications-outline';
+  }
+
+  formatAlertDate(timestamp: string): string {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  }
+
+  // ==================== MOCK TEST METHODS ====================
+  loadMockTests(): void {
+    this.hasExamPreferences = this.mocktestService.hasExamPreferences();
+    if (this.hasExamPreferences) {
+      this.preferredExamNames = this.mocktestService.getPreferredExamNames().join(', ');
+      this.mocktestService.getFilteredExams().subscribe((exams: Exam[]) => {
+        this.filteredMockExams = exams;
+      });
+    } else {
+      this.mocktestService.getAllExams().subscribe((exams: Exam[]) => {
+        this.filteredMockExams = exams;
+      });
+    }
+  }
+
+  goToMockTests(): void {
+    this.router.navigate(['/mocktest']);
+  }
+
+  goToMockTestExam(examId: string): void {
+    if (this.mocktestService.isAuthenticated()) {
+      this.router.navigate(['/test-interface', examId]);
+    } else {
+      this.router.navigate(['/mocktest-auth'], { queryParams: { redirect: examId } });
+    }
+  }
+
+  goToExamPreferences(): void {
+    this.router.navigate(['/exam-preferences']);
+  }
+
+  getMockTestIcon(examId: string): string {
+    const icons: { [key: string]: string } = {
+      'kcet_2026': 'school-outline',
+      'neet_2026': 'medkit-outline',
+      'jee_main_2026': 'rocket-outline'
+    };
+    return icons[examId] || 'document-text-outline';
+  }
+
+  // ==================== RANK PREDICTOR METHODS ====================
+  goToRankPredictor(): void {
+    this.router.navigate(['/rank-predictor']);
+  }
+
+  goToRankPredictorExam(examId: number): void {
+    this.router.navigate(['/rank-predictor-form', examId]);
+  }
+
+  // ==================== END NEW FEATURES METHODS ====================
 }

@@ -1,0 +1,166 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ testSession?.exam_id | uppercase }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleQuestionPalette()" data-testid="question-palette-btn">
+        <ion-icon name="grid-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  
+  <!-- Timer and Stats Bar -->
+  <ion-toolbar color="light">
+    <div class="stats-bar">
+      <div class="timer" [class.warning]="timeRemaining < 300" [class.danger]="timeRemaining < 60">
+        <ion-icon name="time-outline"></ion-icon>
+        <span data-testid="test-timer">{{ formattedTime }}</span>
+      </div>
+      <div class="stats">
+        <span class="stat answered">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          {{ getAnsweredCount() }}/{{ testSession?.total_questions }}
+        </span>
+        <span class="stat marked">
+          <ion-icon name="flag"></ion-icon>
+          {{ getMarkedCount() }}
+        </span>
+      </div>
+    </div>
+  </ion-toolbar>
+
+  <!-- Section Tabs -->
+  <ion-toolbar color="light" class="section-tabs">
+    <ion-segment [(ngModel)]="currentSection" (ionChange)="selectSection($event.detail.value || '')" scrollable>
+      <ion-segment-button *ngFor="let section of sections" [value]="section">
+        <ion-label>
+          {{ section }}
+          <span class="section-progress">
+            ({{ getSectionStats(section).answered }}/{{ getSectionStats(section).total }})
+          </span>
+        </ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="test-content" data-testid="test-interface-page">
+  <!-- Question Card -->
+  <div class="question-card" *ngIf="currentQuestion">
+    <div class="question-header">
+      <div class="question-number">
+        <span class="q-num">Q{{ currentQuestionIndex + 1 }}</span>
+        <span class="q-section">{{ currentQuestion.section }}</span>
+      </div>
+      <div class="question-meta">
+        <ion-chip [color]="currentQuestion.difficulty === 'hard' ? 'danger' : currentQuestion.difficulty === 'medium' ? 'warning' : 'success'" outline>
+          {{ currentQuestion.difficulty | titlecase }}
+        </ion-chip>
+        <ion-chip color="primary" outline>
+          +{{ currentQuestion.marks }} / -{{ currentQuestion.negative_marks }}
+        </ion-chip>
+      </div>
+    </div>
+
+    <div class="question-text">
+      {{ currentQuestion.question_text }}
+    </div>
+
+    <div class="options-list">
+      <div *ngFor="let option of currentQuestion.options; let i = index"
+           class="option"
+           [class.selected]="answers[currentQuestion.question_id] === i"
+           (click)="selectAnswer(i)"
+           [attr.data-testid]="'option-' + i">
+        <div class="option-letter">{{ ['A', 'B', 'C', 'D'][i] }}</div>
+        <div class="option-text">{{ option }}</div>
+        <ion-icon name="checkmark-circle" *ngIf="answers[currentQuestion.question_id] === i"></ion-icon>
+      </div>
+    </div>
+
+    <div class="question-actions">
+      <ion-button fill="outline" color="medium" (click)="clearAnswer()" data-testid="clear-answer-btn">
+        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+        Clear
+      </ion-button>
+      <ion-button fill="outline" 
+                  [color]="isMarkedForReview() ? 'warning' : 'medium'"
+                  (click)="toggleMarkForReview()"
+                  data-testid="mark-review-btn">
+        <ion-icon [name]="isMarkedForReview() ? 'flag' : 'flag-outline'" slot="start"></ion-icon>
+        {{ isMarkedForReview() ? 'Marked' : 'Mark for Review' }}
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Question Palette Overlay -->
+  <div class="question-palette" [class.show]="showQuestionPalette">
+    <div class="palette-overlay" (click)="toggleQuestionPalette()"></div>
+    <div class="palette-content">
+      <div class="palette-header">
+        <h3>Question Palette</h3>
+        <ion-button fill="clear" (click)="toggleQuestionPalette()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </div>
+      
+      <div class="palette-legend">
+        <span class="legend-item answered">
+          <span class="dot"></span> Answered
+        </span>
+        <span class="legend-item marked">
+          <span class="dot"></span> Marked
+        </span>
+        <span class="legend-item not-visited">
+          <span class="dot"></span> Not Attempted
+        </span>
+      </div>
+
+      <div class="palette-sections">
+        <div *ngFor="let section of sections" class="palette-section">
+          <h4>{{ section }}</h4>
+          <div class="palette-grid">
+            <button *ngFor="let question of testSession?.questions; let i = index"
+                    [hidden]="question.section !== section"
+                    class="palette-btn"
+                    [class]="getQuestionStatus(question)"
+                    [class.current]="i === currentQuestionIndex"
+                    (click)="goToQuestion(i)"
+                    [attr.data-testid]="'palette-q-' + (i + 1)">
+              {{ i + 1 }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ion-button expand="block" color="danger" (click)="confirmSubmit()" data-testid="palette-submit-btn">
+        Submit Test
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <div class="navigation-buttons">
+      <ion-button fill="outline" 
+                  [disabled]="currentQuestionIndex === 0"
+                  (click)="previousQuestion()"
+                  data-testid="prev-question-btn">
+        <ion-icon name="chevron-back-outline" slot="start"></ion-icon>
+        Previous
+      </ion-button>
+      
+      <ion-button color="danger" (click)="confirmSubmit()" data-testid="submit-test-btn">
+        Submit
+      </ion-button>
+      
+      <ion-button fill="outline" 
+                  [disabled]="testSession && currentQuestionIndex === testSession.questions.length - 1"
+                  (click)="nextQuestion()"
+                  data-testid="next-question-btn">
+        Next
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

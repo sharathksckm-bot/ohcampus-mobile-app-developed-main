@@ -1,0 +1,134 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="2">
+          <ion-icon name="chevron-back-outline" class="f30" (click)="goBack()" data-testid="back-btn"></ion-icon>
+        </ion-col>
+        <ion-col size="8" class="text-center">
+          <h2 class="primaryhead m0">My Exams</h2>
+        </ion-col>
+        <ion-col size="2" class="text-right">
+          <ion-icon name="checkmark-outline" class="f30" (click)="saveExams()" *ngIf="hasChanges" data-testid="save-btn"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="myexams-content">
+  <!-- Info Section -->
+  <div class="info-section">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <p>Select the exams you're preparing for to receive personalized alerts and updates.</p>
+  </div>
+
+  <!-- Popular Exams Section -->
+  <div class="section-container" *ngIf="popularExams && popularExams.length > 0">
+    <h3 class="section-title">
+      <ion-icon name="star-outline"></ion-icon>
+      Popular Exams
+    </h3>
+    <div class="exam-chips">
+      <ion-chip 
+        *ngFor="let exam of popularExams" 
+        [color]="isExamSelected(exam.id) ? 'primary' : 'medium'"
+        (click)="toggleExam(exam)"
+        [attr.data-testid]="'popular-exam-' + exam.id">
+        <ion-icon [name]="isExamSelected(exam.id) ? 'checkmark-circle' : 'add-circle-outline'"></ion-icon>
+        <ion-label>{{exam.title}}</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
+  <!-- Course Level Filter -->
+  <div class="filter-section">
+    <ion-segment [(ngModel)]="selectedLevel" (ionChange)="onLevelChange($event)" scrollable="true" data-testid="level-filter">
+      <ion-segment-button value="all">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="undergraduate">
+        <ion-label>UG</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="postgraduate">
+        <ion-label>PG</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="professional">
+        <ion-label>Professional</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- All Exams List -->
+  <div class="section-container">
+    <h3 class="section-title">
+      <ion-icon name="list-outline"></ion-icon>
+      All Exams
+    </h3>
+    
+    <!-- Search Bar -->
+    <ion-searchbar 
+      [(ngModel)]="searchText" 
+      placeholder="Search exams..." 
+      (ionInput)="filterExams()"
+      data-testid="exam-search">
+    </ion-searchbar>
+
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="isLoading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading exams...</p>
+    </div>
+
+    <!-- Exams List -->
+    <ion-list *ngIf="!isLoading && filteredExams && filteredExams.length > 0" class="exam-list">
+      <ion-item *ngFor="let exam of filteredExams" lines="full" [attr.data-testid]="'exam-item-' + exam.id">
+        <ion-checkbox 
+          slot="start" 
+          [(ngModel)]="exam.selected"
+          (ionChange)="onExamToggle(exam)"
+          [attr.data-testid]="'exam-checkbox-' + exam.id">
+        </ion-checkbox>
+        <ion-label>
+          <h2>{{exam.title}}</h2>
+          <p *ngIf="exam.category">{{exam.category}}</p>
+          <ion-badge *ngIf="exam.level" color="tertiary">{{exam.level}}</ion-badge>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" (click)="viewExamDetails(exam.id)"></ion-icon>
+      </ion-item>
+    </ion-list>
+
+    <!-- No Results -->
+    <div class="no-results" *ngIf="!isLoading && (!filteredExams || filteredExams.length === 0)">
+      <ion-icon name="search-outline"></ion-icon>
+      <p>No exams found</p>
+    </div>
+  </div>
+
+  <!-- Selected Exams Summary -->
+  <div class="selected-summary" *ngIf="selectedExams.length > 0">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="bookmark"></ion-icon>
+          Selected Exams ({{selectedExams.length}})
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-chip *ngFor="let exam of selectedExams" color="primary" (click)="removeExam(exam)">
+          <ion-label>{{exam.title}}</ion-label>
+          <ion-icon name="close-circle"></ion-icon>
+        </ion-chip>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="block" (click)="saveExams()" [disabled]="!hasChanges" data-testid="save-exams-btn">
+      <ion-icon name="save-outline" slot="start"></ion-icon>
+      Save My Exams
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

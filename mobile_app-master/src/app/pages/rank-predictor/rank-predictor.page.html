@@ -1,0 +1,103 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="rank-predictor-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Rank Predictor</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToHistory()" data-testid="history-btn">
+        <ion-icon name="time-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content data-testid="rank-predictor-page">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <ion-icon name="analytics-outline" class="hero-icon"></ion-icon>
+      <h1>Predict Your Rank</h1>
+      <p>Enter your exam scores to get an estimated rank prediction based on previous year's data</p>
+    </div>
+  </div>
+
+  <!-- Login Prompt for guests -->
+  <div class="login-prompt" *ngIf="!isLoggedIn">
+    <ion-card>
+      <ion-card-content>
+        <ion-icon name="person-add-outline" class="login-icon"></ion-icon>
+        <h3>Login to Save Predictions</h3>
+        <p>Sign in to save your prediction history and access personalized features</p>
+        <ion-button expand="block" (click)="goToLogin()" data-testid="login-prompt-btn">
+          Login / Register
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Category Filter -->
+  <div class="filter-section">
+    <ion-segment [(ngModel)]="selectedCategory" (ionChange)="filterByCategory()" data-testid="category-segment">
+      <ion-segment-button value="all" data-testid="category-all">
+        <ion-label>All Exams</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="Engineering" data-testid="category-engineering">
+        <ion-label>Engineering</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="Medical" data-testid="category-medical">
+        <ion-label>Medical</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading exams...</p>
+  </div>
+
+  <!-- Exam List -->
+  <div class="exam-list" *ngIf="!isLoading">
+    <h2 class="section-title">
+      <ion-icon name="school-outline"></ion-icon>
+      {{ selectedCategory === 'all' ? 'Popular Entrance Exams' : selectedCategory + ' Exams' }}
+    </h2>
+    
+    <ion-card *ngFor="let exam of filteredExams" 
+              class="exam-card" 
+              [style.--card-color]="exam.color"
+              (click)="selectExam(exam)"
+              [attr.data-testid]="'exam-card-' + exam.exam_code">
+      <ion-card-content>
+        <div class="exam-icon" [style.background-color]="exam.color + '20'">
+          <ion-icon [name]="exam.icon" [style.color]="exam.color"></ion-icon>
+        </div>
+        <div class="exam-info">
+          <h3>{{ exam.exam_name }}</h3>
+          <p>{{ exam.description }}</p>
+          <ion-badge [style.--background]="exam.color">{{ exam.category }}</ion-badge>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredExams.length === 0">
+      <ion-icon name="search-outline"></ion-icon>
+      <h3>No Exams Found</h3>
+      <p>No exams available in this category</p>
+    </div>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <p>
+      <strong>Disclaimer:</strong> Rank predictions are estimates based on previous year's data and may vary. 
+      Actual ranks depend on multiple factors including total applicants and cutoffs.
+    </p>
+  </div>
+</ion-content>

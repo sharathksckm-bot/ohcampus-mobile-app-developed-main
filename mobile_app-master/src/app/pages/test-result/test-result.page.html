@@ -1,0 +1,142 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goToMockTests()" data-testid="result-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Test Result</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToHistory()" data-testid="result-history-btn">
+        <ion-icon name="time-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="result-content" data-testid="test-result-page">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading result...</p>
+  </div>
+
+  <!-- No Result -->
+  <div class="no-result" *ngIf="!isLoading && !result">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <h2>Result Not Found</h2>
+    <p>We couldn't find the test result you're looking for.</p>
+    <ion-button (click)="goToMockTests()">Go to Mock Tests</ion-button>
+  </div>
+
+  <!-- Result Content -->
+  <div class="result-container" *ngIf="!isLoading && result">
+    <!-- Score Card -->
+    <div class="score-card">
+      <div class="score-header">
+        <h2>{{ exam?.name || 'Mock Test' }}</h2>
+        <p>{{ formatDate(result.submitted_at) }}</p>
+      </div>
+      
+      <div class="score-circle" [class]="getGradeColor()">
+        <div class="circle-inner">
+          <span class="score">{{ result.percentage }}%</span>
+          <span class="grade">Grade: {{ getGrade() }}</span>
+        </div>
+      </div>
+      
+      <p class="performance-message">{{ getPerformanceMessage() }}</p>
+      
+      <div class="score-details">
+        <div class="detail">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <div class="detail-info">
+            <span class="value">{{ result.score }}/{{ result.max_score }}</span>
+            <span class="label">Total Score</span>
+          </div>
+        </div>
+        <div class="detail">
+          <ion-icon name="time-outline" color="primary"></ion-icon>
+          <div class="detail-info">
+            <span class="value">{{ result.time_taken_minutes }} min</span>
+            <span class="label">Time Taken</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Card -->
+    <div class="stats-card">
+      <h3>Performance Breakdown</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value total">{{ result.total_questions }}</div>
+          <div class="stat-label">Total Questions</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value attempted">{{ result.attempted }}</div>
+          <div class="stat-label">Attempted</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value correct">{{ result.correct }}</div>
+          <div class="stat-label">Correct</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value incorrect">{{ result.incorrect }}</div>
+          <div class="stat-label">Incorrect</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section-wise Analysis -->
+    <div class="section-card">
+      <h3>Section-wise Analysis</h3>
+      <div class="sections-list">
+        <div *ngFor="let section of getSections()" class="section-item">
+          <div class="section-header">
+            <span class="section-name">{{ section }}</span>
+            <ion-chip [color]="getSectionColor(section)" size="small">
+              {{ getSectionPercentage(section) }}%
+            </ion-chip>
+          </div>
+          <div class="section-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="getSectionPercentage(section)"
+                   [class]="getSectionColor(section)"></div>
+            </div>
+          </div>
+          <div class="section-stats">
+            <span>
+              <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+              {{ result.section_wise[section].correct }}/{{ result.section_wise[section].total }}
+            </span>
+            <span>
+              <ion-icon name="close-circle-outline" color="danger"></ion-icon>
+              {{ result.section_wise[section].incorrect }} wrong
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button expand="block" color="tertiary" (click)="reviewAnswers()" *ngIf="hasAnswerReview()" data-testid="review-answers-btn">
+        <ion-icon name="book-outline" slot="start"></ion-icon>
+        Review Answers & Explanations
+      </ion-button>
+      <ion-button expand="block" (click)="retakeTest()" data-testid="retake-test-btn">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Retake Test
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="goToLeaderboard()" data-testid="view-leaderboard-btn">
+        <ion-icon name="trophy-outline" slot="start"></ion-icon>
+        View Leaderboard
+      </ion-button>
+      <ion-button expand="block" fill="clear" (click)="goToMockTests()" data-testid="browse-tests-btn">
+        Browse Other Tests
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

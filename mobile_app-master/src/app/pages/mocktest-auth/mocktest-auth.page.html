@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="auth-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isLogin ? 'Login' : 'Register' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="auth-content" data-testid="mocktest-auth-page">
+  <div class="auth-container">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="logo-container">
+        <ion-icon name="school-outline" class="logo-icon"></ion-icon>
+      </div>
+      <h1>Mock Test Portal</h1>
+      <p>{{ isLogin ? 'Welcome back! Sign in to continue' : 'Create an account to get started' }}</p>
+    </div>
+
+    <!-- Form -->
+    <div class="auth-form">
+      <ion-list lines="none">
+        <!-- Name (Register only) -->
+        <ion-item *ngIf="!isLogin" class="form-item">
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+          <ion-input
+            type="text"
+            placeholder="Full Name"
+            [(ngModel)]="name"
+            data-testid="auth-name-input"
+          ></ion-input>
+        </ion-item>
+
+        <!-- Email -->
+        <ion-item class="form-item">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          <ion-input
+            type="email"
+            placeholder="Email Address"
+            [(ngModel)]="email"
+            data-testid="auth-email-input"
+          ></ion-input>
+        </ion-item>
+
+        <!-- Password -->
+        <ion-item class="form-item">
+          <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+          <ion-input
+            type="password"
+            placeholder="Password"
+            [(ngModel)]="password"
+            data-testid="auth-password-input"
+          ></ion-input>
+        </ion-item>
+
+        <!-- Confirm Password (Register only) -->
+        <ion-item *ngIf="!isLogin" class="form-item">
+          <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
+          <ion-input
+            type="password"
+            placeholder="Confirm Password"
+            [(ngModel)]="confirmPassword"
+            data-testid="auth-confirm-password-input"
+          ></ion-input>
+        </ion-item>
+      </ion-list>
+
+      <!-- Submit Button -->
+      <ion-button 
+        expand="block" 
+        (click)="submit()" 
+        class="submit-btn"
+        data-testid="auth-submit-btn"
+      >
+        {{ isLogin ? 'Login' : 'Create Account' }}
+        <ion-icon [name]="isLogin ? 'log-in-outline' : 'person-add-outline'" slot="end"></ion-icon>
+      </ion-button>
+
+      <!-- Toggle Login/Register -->
+      <div class="toggle-mode">
+        <p *ngIf="isLogin">
+          Don't have an account?
+          <span (click)="toggleMode()" class="toggle-link" data-testid="toggle-to-register">Register</span>
+        </p>
+        <p *ngIf="!isLogin">
+          Already have an account?
+          <span (click)="toggleMode()" class="toggle-link" data-testid="toggle-to-login">Login</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features-info">
+      <h4>Why create an account?</h4>
+      <ul>
+        <li>
+          <ion-icon name="save-outline"></ion-icon>
+          <span>Save your test progress and results</span>
+        </li>
+        <li>
+          <ion-icon name="trophy-outline"></ion-icon>
+          <span>Compete on the leaderboard</span>
+        </li>
+        <li>
+          <ion-icon name="analytics-outline"></ion-icon>
+          <span>Track your performance over time</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</ion-content>

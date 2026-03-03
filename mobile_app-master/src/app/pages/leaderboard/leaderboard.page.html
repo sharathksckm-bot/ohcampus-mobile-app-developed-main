@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="leaderboard-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Leaderboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="leaderboard-content" data-testid="leaderboard-page">
+  <!-- Header -->
+  <div class="leaderboard-header">
+    <div class="trophy-container">
+      <ion-icon name="trophy"></ion-icon>
+    </div>
+    <h1>Top Performers</h1>
+    <p>See how you stack up against other students</p>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-section">
+    <ion-segment [(ngModel)]="selectedExam" (ionChange)="filterByExam($event)">
+      <ion-segment-button value="">
+        <ion-label>All Exams</ion-label>
+      </ion-segment-button>
+      <ion-segment-button *ngFor="let exam of exams" [value]="exam.exam_id">
+        <ion-label>{{ exam.name }}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading leaderboard...</p>
+  </div>
+
+  <!-- Leaderboard List -->
+  <div class="leaderboard-list" *ngIf="!isLoading && leaderboard.length > 0">
+    <!-- Top 3 Podium -->
+    <div class="podium">
+      <div class="podium-item second" *ngIf="leaderboard[1]">
+        <div class="avatar">{{ leaderboard[1].name.charAt(0) }}</div>
+        <div class="badge silver">2</div>
+        <div class="name">{{ leaderboard[1].name }}</div>
+        <div class="score">{{ leaderboard[1].score }} pts</div>
+      </div>
+      <div class="podium-item first" *ngIf="leaderboard[0]">
+        <div class="crown">👑</div>
+        <div class="avatar">{{ leaderboard[0].name.charAt(0) }}</div>
+        <div class="badge gold">1</div>
+        <div class="name">{{ leaderboard[0].name }}</div>
+        <div class="score">{{ leaderboard[0].score }} pts</div>
+      </div>
+      <div class="podium-item third" *ngIf="leaderboard[2]">
+        <div class="avatar">{{ leaderboard[2].name.charAt(0) }}</div>
+        <div class="badge bronze">3</div>
+        <div class="name">{{ leaderboard[2].name }}</div>
+        <div class="score">{{ leaderboard[2].score }} pts</div>
+      </div>
+    </div>
+
+    <!-- Rest of the list -->
+    <div class="rankings">
+      <div *ngFor="let entry of leaderboard; let i = index" 
+           class="rank-item"
+           [class]="getRankClass(entry.rank)"
+           [attr.data-testid]="'rank-item-' + entry.rank">
+        <div class="rank">
+          <span class="rank-number" *ngIf="entry.rank > 3">{{ entry.rank }}</span>
+          <span class="rank-badge" *ngIf="entry.rank <= 3">{{ getRankBadge(entry.rank) }}</span>
+        </div>
+        <div class="user-info">
+          <div class="avatar small">{{ entry.name.charAt(0) }}</div>
+          <div class="details">
+            <span class="name">{{ entry.name }}</span>
+            <span class="stats">{{ entry.percentage }}% • {{ entry.time_taken_minutes }} min</span>
+          </div>
+        </div>
+        <div class="score">{{ entry.score }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && leaderboard.length === 0">
+    <ion-icon name="podium-outline"></ion-icon>
+    <h2>No Rankings Yet</h2>
+    <p>Be the first to appear on the leaderboard!</p>
+    <ion-button (click)="goBack()">
+      <ion-icon name="play-outline" slot="start"></ion-icon>
+      Take a Test
+    </ion-button>
+  </div>
+</ion-content>
