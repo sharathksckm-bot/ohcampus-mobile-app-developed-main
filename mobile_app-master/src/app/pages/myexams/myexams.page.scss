@@ -1,0 +1,231 @@
+.myexams-content {
+  --background: #f5f7fa;
+}
+
+.info-section {
+  background: linear-gradient(135deg, #0083dc 0%, #00b4d8 100%);
+  color: white;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  
+  ion-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+.section-container {
+  background: white;
+  margin: 12px;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  
+  ion-icon {
+    color: #0083dc;
+  }
+}
+
+.exam-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  
+  ion-chip {
+    --background: #f0f0f0;
+    --color: #333;
+    margin: 0;
+    
+    &[color="primary"] {
+      --background: #0083dc;
+      --color: white;
+    }
+    
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.filter-section {
+  padding: 12px;
+  
+  ion-segment {
+    background: white;
+    border-radius: 8px;
+    
+    ion-segment-button {
+      --indicator-color: #88d834;
+      --color-checked: white;
+      --background-checked: #88d834;
+      min-width: 70px;
+      text-transform: capitalize;
+    }
+  }
+}
+
+ion-searchbar {
+  --background: #f5f5f5;
+  --border-radius: 8px;
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+.exam-list {
+  background: transparent;
+  
+  ion-item {
+    --background: white;
+    --border-color: #f0f0f0;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    --padding-start: 12px;
+    
+    ion-checkbox {
+      --size: 22px;
+      --border-radius: 4px;
+      --checkbox-background-checked: #0083dc;
+    }
+    
+    ion-label {
+      h2 {
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 4px;
+      }
+      
+      p {
+        font-size: 13px;
+        color: #777;
+        margin: 0;
+      }
+      
+      ion-badge {
+        font-size: 10px;
+        padding: 3px 6px;
+        margin-top: 4px;
+      }
+    }
+    
+    ion-icon[slot="end"] {
+      color: #ccc;
+      font-size: 18px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  
+  ion-spinner {
+    width: 40px;
+    height: 40px;
+    color: #0083dc;
+  }
+  
+  p {
+    margin-top: 12px;
+    color: #777;
+  }
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  
+  ion-icon {
+    font-size: 48px;
+    color: #ddd;
+  }
+  
+  p {
+    margin-top: 12px;
+    color: #999;
+    font-size: 14px;
+  }
+}
+
+.selected-summary {
+  padding: 0 12px 12px;
+  
+  ion-card {
+    margin: 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    
+    ion-card-header {
+      padding-bottom: 8px;
+      
+      ion-card-title {
+        font-size: 14px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        ion-icon {
+          color: #0083dc;
+        }
+      }
+    }
+    
+    ion-card-content {
+      padding-top: 0;
+      
+      ion-chip {
+        margin: 4px;
+        --background: #e3f2fd;
+        --color: #0083dc;
+        
+        ion-icon {
+          color: #0083dc;
+        }
+      }
+    }
+  }
+}
+
+ion-footer {
+  ion-toolbar {
+    --background: white;
+    padding: 8px 12px;
+    
+    ion-button {
+      --border-radius: 8px;
+      --background: #0083dc;
+      height: 48px;
+      font-weight: 500;
+      text-transform: capitalize;
+      
+      &[disabled] {
+        --background: #ccc;
+      }
+    }
+  }
+}

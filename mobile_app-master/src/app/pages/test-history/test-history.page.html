@@ -1,0 +1,80 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="history-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Test History</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="history-content" data-testid="test-history-page">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading history...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && history.length === 0">
+    <ion-icon name="time-outline"></ion-icon>
+    <h2>No Test History</h2>
+    <p>You haven't taken any tests yet. Start practicing now!</p>
+    <ion-button (click)="goBack()" data-testid="start-practice-btn">
+      <ion-icon name="play-outline" slot="start"></ion-icon>
+      Start Practice
+    </ion-button>
+  </div>
+
+  <!-- History List -->
+  <div class="history-list" *ngIf="!isLoading && history.length > 0">
+    <div class="history-header">
+      <h2>Your Test Attempts</h2>
+      <p>{{ history.length }} test{{ history.length > 1 ? 's' : '' }} completed</p>
+    </div>
+
+    <ion-card *ngFor="let result of history; let i = index" 
+              class="history-card"
+              (click)="viewResult(result.test_id)"
+              [attr.data-testid]="'history-item-' + i">
+      <ion-card-content>
+        <div class="result-header">
+          <div class="exam-info">
+            <h3>{{ getExamName(result.exam_id) }}</h3>
+            <p>{{ formatDate(result.submitted_at) }}</p>
+          </div>
+          <div class="score-badge" [class]="getScoreColor(result.percentage)">
+            {{ result.percentage }}%
+          </div>
+        </div>
+
+        <div class="result-stats">
+          <div class="stat">
+            <span class="value">{{ result.score }}/{{ result.max_score }}</span>
+            <span class="label">Score</span>
+          </div>
+          <div class="stat">
+            <span class="value">{{ result.correct }}/{{ result.total_questions }}</span>
+            <span class="label">Correct</span>
+          </div>
+          <div class="stat">
+            <span class="value">{{ result.time_taken_minutes }} min</span>
+            <span class="label">Time</span>
+          </div>
+        </div>
+
+        <div class="view-more">
+          <span>View Details</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Clear History Button -->
+    <ion-button expand="block" fill="clear" color="danger" (click)="clearHistory()" data-testid="clear-history-btn">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Clear History
+    </ion-button>
+  </div>
+</ion-content>

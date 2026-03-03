@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="preferences-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Exam Preferences</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="preferences-content" data-testid="exam-preferences-page">
+  <!-- Header -->
+  <div class="preferences-header">
+    <div class="header-icon">
+      <ion-icon name="settings-outline"></ion-icon>
+    </div>
+    <h1>Select Your Exams</h1>
+    <p>Choose the exams you're preparing for to see relevant mock tests</p>
+  </div>
+
+  <!-- Info Card -->
+  <div class="info-card">
+    <ion-icon name="information-circle-outline"></ion-icon>
+    <p>Select one or more exams. Your home page and mock tests will be filtered based on your selection.</p>
+  </div>
+
+  <!-- Exam Selection -->
+  <div class="exam-selection" *ngIf="!isLoading">
+    <h3>Available Exams</h3>
+    
+    <div class="exam-options">
+      <div *ngFor="let exam of allExams" 
+           class="exam-option" 
+           [class.selected]="isSelected(exam.exam_id)"
+           (click)="toggleExam(exam.exam_id)"
+           [attr.data-testid]="'exam-option-' + exam.exam_id">
+        <div class="exam-checkbox">
+          <ion-icon [name]="isSelected(exam.exam_id) ? 'checkbox' : 'square-outline'"></ion-icon>
+        </div>
+        <div class="exam-icon" [ngClass]="exam.exam_id">
+          <ion-icon [name]="getExamIcon(exam.exam_id)"></ion-icon>
+        </div>
+        <div class="exam-details">
+          <h4>{{ exam.name }}</h4>
+          <p>{{ exam.sections.join(' • ') }}</p>
+          <span class="question-count">{{ exam.total_questions }} Questions • {{ exam.duration_minutes }} mins</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selection Summary -->
+    <div class="selection-summary" *ngIf="selectedExamIds.length > 0">
+      <ion-chip color="primary">
+        <ion-icon name="checkmark-circle"></ion-icon>
+        <ion-label>{{ selectedExamIds.length }} exam{{ selectedExamIds.length > 1 ? 's' : '' }} selected</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading exams...</p>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons" *ngIf="!isLoading">
+    <ion-button expand="block" 
+                [disabled]="selectedExamIds.length === 0" 
+                (click)="savePreferences()"
+                data-testid="save-preferences-btn">
+      <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+      Save Preferences
+    </ion-button>
+    <ion-button expand="block" 
+                fill="outline" 
+                color="medium"
+                *ngIf="currentPreferences"
+                (click)="clearPreferences()"
+                data-testid="clear-preferences-btn">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Clear Preferences (Show All)
+    </ion-button>
+  </div>
+</ion-content>

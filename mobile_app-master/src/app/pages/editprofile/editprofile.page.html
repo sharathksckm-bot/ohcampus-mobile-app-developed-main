@@ -1,89 +1,654 @@
-
-
-
-
- <ion-header [translucent]="true">
-  <ion-toolbar >
-    <ion-grid >
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-grid>
       <ion-row>
         <ion-col size="2">
-          <ion-icon name="arrow-back" routerLink="/tabs/tabs/tab1"></ion-icon>
+          <ion-icon name="arrow-back" routerLink="/tabs/tabs/tab1" data-testid="back-btn"></ion-icon>
         </ion-col>
         <ion-col size="8" class="text-center">
-          <h5 class="primaryhead m0">Profile </h5>
+          <h5 class="primaryhead m0">My Profile</h5>
         </ion-col>
-        </ion-row>
+        <ion-col size="2" class="text-right">
+          <ion-icon name="create-outline" (click)="toggleEditMode()" *ngIf="!isEditMode && email" data-testid="edit-btn"></ion-icon>
+          <div *ngIf="isEditMode" class="edit-actions">
+            <ion-icon name="close-outline" (click)="cancelEdit()" class="cancel-icon" data-testid="cancel-btn"></ion-icon>
+            <ion-icon name="checkmark-outline" (click)="saveProfile()" class="save-icon" data-testid="save-btn"></ion-icon>
+          </div>
+        </ion-col>
+      </ion-row>
     </ion-grid>
   </ion-toolbar>
-</ion-header> 
+</ion-header>
 
-<ion-content [fullscreen]="true" style="--background:aliceblue ;">
-  <div class="profbox">
-  <ion-list>
+<ion-content [fullscreen]="true" class="profile-content">
+  <!-- Profile Header Section -->
+  <div class="profile-header">
+    <div class="profile-avatar-wrapper">
+      <ion-avatar class="profile-avatar">
+        <img [src]="profileImage || 'https://ionicframework.com/docs/img/demos/avatar.svg'" alt="Profile Avatar">
+      </ion-avatar>
+      <div class="avatar-edit-btn" (click)="changeProfilePicture()" *ngIf="isEditMode" data-testid="change-photo-btn">
+        <ion-icon name="camera"></ion-icon>
+      </div>
+    </div>
+    <h2 class="profile-name">{{username || 'Guest User'}}</h2>
+    <p class="profile-email">{{email || 'Not logged in'}}</p>
+  </div>
 
-  <ion-item class="profilehead" lines="none">
-    <ion-avatar slot="start">
-      <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg" />
-    </ion-avatar>
-    <ion-label> 
-      <h6>{{username}}</h6>
-     
-    </ion-label>
-  </ion-item>
+  <!-- Login Prompt for Guest Users -->
+  <div class="login-prompt" *ngIf="!email">
+    <ion-card>
+      <ion-card-content>
+        <ion-icon name="person-circle-outline" class="prompt-icon"></ion-icon>
+        <h3>Sign in to manage your profile</h3>
+        <p>Create an account or log in to access personalized features and save your preferences.</p>
+        <ion-button expand="block" (click)="presentSignInModal()" data-testid="login-prompt-btn">
+          <ion-icon name="log-in-outline" slot="start"></ion-icon>
+          Sign In / Sign Up
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
+  <!-- Profile Sections for Logged-in Users -->
+  <div class="profile-sections" *ngIf="email">
+    
+    <!-- Basic Information Section -->
+    <ion-card class="section-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline"></ion-icon>
+          Basic Information
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label position="stacked">Full Name</ion-label>
+            <ion-input 
+              [(ngModel)]="profileData.fullName" 
+              [readonly]="!isEditMode"
+              placeholder="Enter your full name"
+              data-testid="fullname-input">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="stacked">Email Address</ion-label>
+            <ion-input 
+              [(ngModel)]="profileData.email" 
+              [readonly]="true"
+              type="email"
+              data-testid="email-input">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="stacked">Phone Number</ion-label>
+            <ion-input 
+              [(ngModel)]="profileData.phone" 
+              [readonly]="!isEditMode"
+              type="tel"
+              placeholder="Enter your phone number"
+              data-testid="phone-input">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="stacked">Date of Birth</ion-label>
+            <ion-datetime-button datetime="dob" *ngIf="isEditMode"></ion-datetime-button>
+            <ion-input 
+              *ngIf="!isEditMode"
+              [value]="profileData.dateOfBirth || 'Not specified'"
+              [readonly]="true"
+              data-testid="dob-input">
+            </ion-input>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="stacked">Gender</ion-label>
+            <ion-select 
+              [(ngModel)]="profileData.gender" 
+              [disabled]="!isEditMode"
+              placeholder="Select gender"
+              interface="action-sheet"
+              data-testid="gender-select">
+              <ion-select-option value="male">Male</ion-select-option>
+              <ion-select-option value="female">Female</ion-select-option>
+              <ion-select-option value="other">Other</ion-select-option>
+              <ion-select-option value="prefer-not">Prefer not to say</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <!-- Current State - Searchable -->
+          <ion-item button="true" (click)="openStateModal('basic')" id="open-basic-state-modal" [disabled]="!isEditMode">
+            <ion-label position="stacked">State</ion-label>
+            <ion-text>
+              <p class="selected-value" *ngIf="profileData.currentStateName">{{profileData.currentStateName}}</p>
+              <p class="placeholder-text" *ngIf="!profileData.currentStateName">Select your state</p>
+            </ion-text>
+            <ion-icon name="chevron-down-outline" slot="end" *ngIf="isEditMode"></ion-icon>
+            <ion-spinner *ngIf="isLoadingStates" name="crescent" slot="end"></ion-spinner>
+          </ion-item>
+          
+          <!-- Current City - Searchable -->
+          <ion-item button="true" (click)="openCityModal('basic')" id="open-basic-city-modal" [disabled]="!isEditMode || !profileData.currentState">
+            <ion-label position="stacked">City</ion-label>
+            <ion-text>
+              <p class="selected-value" *ngIf="profileData.currentCityName">{{profileData.currentCityName}}</p>
+              <p class="placeholder-text" *ngIf="!profileData.currentCityName">
+                {{profileData.currentState ? 'Select your city' : 'Select state first'}}
+              </p>
+            </ion-text>
+            <ion-icon name="chevron-down-outline" slot="end" *ngIf="isEditMode && profileData.currentState"></ion-icon>
+            <ion-spinner *ngIf="isLoadingBasicCities" name="crescent" slot="end"></ion-spinner>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
 
-  <ion-item lines="full" class="ion-margin-top" *ngIf="email">
-    <ion-icon name="mail-outline" slot="start"></ion-icon>
-    <ion-label> {{email}}</ion-label>
-  </ion-item>
+    <!-- Educational Background Section -->
+    <ion-card class="section-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="school-outline"></ion-icon>
+          Educational Background
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label position="stacked">Current Education Level</ion-label>
+            <ion-select 
+              [(ngModel)]="profileData.currentEducation" 
+              [disabled]="!isEditMode"
+              placeholder="Select your current level"
+              interface="action-sheet"
+              data-testid="education-level-select">
+              <ion-select-option value="10th">10th Standard</ion-select-option>
+              <ion-select-option value="12th">12th Standard</ion-select-option>
+              <ion-select-option value="undergraduate">Undergraduate</ion-select-option>
+              <ion-select-option value="graduate">Graduate</ion-select-option>
+              <ion-select-option value="postgraduate">Post Graduate</ion-select-option>
+              <ion-select-option value="diploma">Diploma</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <!-- School Level Fields (10th/12th) -->
+          <ng-container *ngIf="isSchoolLevel()">
+            <ion-item>
+              <ion-label position="stacked">School Name</ion-label>
+              <ion-input 
+                [(ngModel)]="profileData.institutionName" 
+                [readonly]="!isEditMode"
+                placeholder="Enter your school name"
+                data-testid="school-name-input">
+              </ion-input>
+            </ion-item>
+            
+            <ion-item>
+              <ion-label position="stacked">Board</ion-label>
+              <ion-select 
+                [(ngModel)]="profileData.board" 
+                [disabled]="!isEditMode"
+                placeholder="Select your board"
+                interface="action-sheet"
+                data-testid="board-select">
+                <ion-select-option value="cbse">CBSE</ion-select-option>
+                <ion-select-option value="icse">ICSE</ion-select-option>
+                <ion-select-option value="state">State Board</ion-select-option>
+                <ion-select-option value="ib">IB</ion-select-option>
+                <ion-select-option value="cambridge">Cambridge</ion-select-option>
+                <ion-select-option value="other">Other</ion-select-option>
+              </ion-select>
+            </ion-item>
+            
+            <ion-item *ngIf="profileData.currentEducation === '12th'">
+              <ion-label position="stacked">Stream</ion-label>
+              <ion-select 
+                [(ngModel)]="profileData.stream" 
+                [disabled]="!isEditMode"
+                placeholder="Select your stream"
+                interface="action-sheet"
+                data-testid="stream-select">
+                <ion-select-option value="science-pcm">Science (PCM)</ion-select-option>
+                <ion-select-option value="science-pcb">Science (PCB)</ion-select-option>
+                <ion-select-option value="science-pcmb">Science (PCMB)</ion-select-option>
+                <ion-select-option value="commerce">Commerce</ion-select-option>
+                <ion-select-option value="arts">Arts/Humanities</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ng-container>
+          
+          <!-- Higher Education Fields (Undergraduate/Graduate/PG/Diploma) -->
+          <ng-container *ngIf="isHigherEducation()">
+            <ion-item>
+              <ion-label position="stacked">University Name</ion-label>
+              <ion-input 
+                [(ngModel)]="profileData.universityName" 
+                [readonly]="!isEditMode"
+                placeholder="Enter your university name"
+                data-testid="university-name-input">
+              </ion-input>
+            </ion-item>
+            
+            <ion-item>
+              <ion-label position="stacked">College Name</ion-label>
+              <ion-input 
+                [(ngModel)]="profileData.collegeName" 
+                [readonly]="!isEditMode"
+                placeholder="Enter your college name"
+                data-testid="college-name-input">
+              </ion-input>
+            </ion-item>
+            
+            <ion-item>
+              <ion-label position="stacked">Specialization/Branch</ion-label>
+              <ion-input 
+                [(ngModel)]="profileData.specialization" 
+                [readonly]="!isEditMode"
+                placeholder="e.g., Computer Science, Mechanical Engineering"
+                data-testid="specialization-input">
+              </ion-input>
+            </ion-item>
+          </ng-container>
+          
+          <ion-item>
+            <ion-label position="stacked">Passing Year</ion-label>
+            <ion-select 
+              [(ngModel)]="profileData.passingYear" 
+              [disabled]="!isEditMode"
+              placeholder="Select passing year"
+              interface="action-sheet"
+              data-testid="passing-year-select">
+              <ion-select-option *ngFor="let year of passingYears" [value]="year">{{year}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="stacked">Percentage/CGPA</ion-label>
+            <ion-input 
+              [(ngModel)]="profileData.percentage" 
+              [readonly]="!isEditMode"
+              type="text"
+              placeholder="Enter your percentage or CGPA"
+              data-testid="percentage-input">
+            </ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
 
- 
-  <ion-item lines="full" *ngIf="email"  (click)="logout()" (click)="logout1()" >
-    <ion-icon name="log-out-outline" slot="start"></ion-icon>
-    <ion-label> Log Out</ion-label>
-  </ion-item>
+    <!-- Preferences Section -->
+    <ion-card class="section-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="options-outline"></ion-icon>
+          Course & College Preferences
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="none">
+          <ion-item>
+            <ion-label position="stacked">Preferred Course Category</ion-label>
+            <ion-select 
+              [(ngModel)]="profileData.preferredCourse" 
+              [disabled]="!isEditMode"
+              placeholder="Select preferred course"
+              interface="action-sheet"
+              data-testid="preferred-course-select">
+              <ion-select-option value="engineering">Engineering</ion-select-option>
+              <ion-select-option value="medical">Medical</ion-select-option>
+              <ion-select-option value="management">Management/MBA</ion-select-option>
+              <ion-select-option value="law">Law</ion-select-option>
+              <ion-select-option value="design">Design</ion-select-option>
+              <ion-select-option value="arts">Arts & Humanities</ion-select-option>
+              <ion-select-option value="science">Science</ion-select-option>
+              <ion-select-option value="commerce">Commerce</ion-select-option>
+              <ion-select-option value="pharmacy">Pharmacy</ion-select-option>
+              <ion-select-option value="architecture">Architecture</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <!-- Preferred State - Searchable -->
+          <ion-item button="true" (click)="openStateModal('preferred')" id="open-state-modal" [disabled]="!isEditMode">
+            <ion-label position="stacked">Preferred State</ion-label>
+            <ion-text>
+              <p class="selected-value" *ngIf="profileData.preferredStateName">{{profileData.preferredStateName}}</p>
+              <p class="placeholder-text" *ngIf="!profileData.preferredStateName">Select preferred state</p>
+            </ion-text>
+            <ion-icon name="chevron-down-outline" slot="end" *ngIf="isEditMode"></ion-icon>
+            <ion-spinner *ngIf="isLoadingStates" name="crescent" slot="end"></ion-spinner>
+          </ion-item>
+          
+          <!-- Preferred City - Searchable -->
+          <ion-item button="true" (click)="openCityModal('preferred')" id="open-city-modal" [disabled]="!isEditMode || !profileData.preferredState">
+            <ion-label position="stacked">Preferred City</ion-label>
+            <ion-text>
+              <p class="selected-value" *ngIf="profileData.preferredCityName">{{profileData.preferredCityName}}</p>
+              <p class="placeholder-text" *ngIf="!profileData.preferredCityName">
+                {{profileData.preferredState ? 'Select preferred city' : 'Select state first'}}
+              </p>
+            </ion-text>
+            <ion-icon name="chevron-down-outline" slot="end" *ngIf="isEditMode && profileData.preferredState"></ion-icon>
+            <ion-spinner *ngIf="isLoadingCities" name="crescent" slot="end"></ion-spinner>
+          </ion-item>
+          
+          <ion-item>
+            <ion-label position="stacked">Budget Range (Annual Fee)</ion-label>
+            <ion-select 
+              [(ngModel)]="profileData.budgetRange" 
+              [disabled]="!isEditMode"
+              placeholder="Select budget range"
+              interface="action-sheet"
+              data-testid="budget-select">
+              <ion-select-option value="below-1l">Below ₹1 Lakh</ion-select-option>
+              <ion-select-option value="1l-3l">₹1 - 3 Lakhs</ion-select-option>
+              <ion-select-option value="3l-5l">₹3 - 5 Lakhs</ion-select-option>
+              <ion-select-option value="5l-10l">₹5 - 10 Lakhs</ion-select-option>
+              <ion-select-option value="above-10l">Above ₹10 Lakhs</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+          <!-- Entrance Exams - Searchable Multi-select -->
+          <ion-item button="true" (click)="openExamsModal()" id="open-exams-modal" [disabled]="!isEditMode">
+            <ion-label position="stacked">Entrance Exams Taken/Planning</ion-label>
+            <ion-text>
+              <p class="selected-value" *ngIf="profileData.entranceExamNames && profileData.entranceExamNames.length > 0">
+                {{profileData.entranceExamNames.join(', ')}}
+              </p>
+              <p class="placeholder-text" *ngIf="!profileData.entranceExamNames || profileData.entranceExamNames.length === 0">
+                Select entrance exams
+              </p>
+            </ion-text>
+            <ion-icon name="chevron-down-outline" slot="end" *ngIf="isEditMode"></ion-icon>
+            <ion-spinner *ngIf="isLoadingExams" name="crescent" slot="end"></ion-spinner>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
 
-  <ion-item lines="full" *ngIf="!email" (click)="presentSignInModal()">
-    <ion-icon name="log-in-outline" slot="start"></ion-icon>
-    <ion-label> Log In</ion-label>
-  </ion-item>
+    <!-- Account Actions -->
+    <ion-card class="section-card action-card">
+      <ion-card-content>
+        <!-- My Exams Section - NEW -->
+        <ion-button expand="block" fill="outline" color="primary" routerLink="/myexams" data-testid="my-exams-btn">
+          <ion-icon name="school" slot="start"></ion-icon>
+          My Exams (Get Personalized Alerts)
+        </ion-button>
+        
+        <ion-button expand="block" fill="outline" routerLink="/editpreferences" data-testid="edit-preferences-btn">
+          <ion-icon name="settings-outline" slot="start"></ion-icon>
+          Edit Course Preferences
+        </ion-button>
+        
+        <ion-button expand="block" fill="outline" routerLink="/tabs/tabs/tab4" data-testid="view-shortlist-btn">
+          <ion-icon name="bookmark-outline" slot="start"></ion-icon>
+          View Shortlisted Colleges
+        </ion-button>
+        
+        <ion-button expand="block" color="danger" (click)="logout()" (click)="logout1()" data-testid="logout-btn">
+          <ion-icon name="log-out-outline" slot="start"></ion-icon>
+          Log Out
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
-</ion-list>
-</div>
+  <!-- Hidden datetime picker -->
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime 
+        id="dob" 
+        presentation="date"
+        [(ngModel)]="profileData.dateOfBirth"
+        [max]="maxDate"
+        data-testid="dob-picker">
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Basic State Selection Modal with Search -->
+  <ion-modal #basicStateModal trigger="open-basic-state-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancelStateModal('basic')" color="medium">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Select State</ion-title>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar 
+            placeholder="Search states..." 
+            (ionInput)="filterStates($event, 'basic')"
+            [value]="basicStateSearchTerm"
+            data-testid="basic-state-search">
+          </ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item *ngIf="isLoadingStates" class="loading-item">
+            <ion-spinner name="crescent"></ion-spinner>
+            <ion-label>Loading states...</ion-label>
+          </ion-item>
+          <ion-item *ngIf="!isLoadingStates && filteredStatesList.length === 0" class="empty-item">
+            <ion-label>No states found</ion-label>
+          </ion-item>
+          <ion-item 
+            *ngFor="let state of filteredStatesList" 
+            button="true" 
+            (click)="selectState(state, 'basic')"
+            [class.selected]="profileData.currentState === state.id">
+            <ion-label>{{state.statename}}</ion-label>
+            <ion-icon name="checkmark" slot="end" *ngIf="profileData.currentState === state.id" color="primary"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Basic City Selection Modal with Search -->
+  <ion-modal #basicCityModal trigger="open-basic-city-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancelCityModal('basic')" color="medium">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Select City</ion-title>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar 
+            placeholder="Search cities..." 
+            (ionInput)="filterCities($event, 'basic')"
+            [value]="basicCitySearchTerm"
+            data-testid="basic-city-search">
+          </ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item *ngIf="isLoadingBasicCities" class="loading-item">
+            <ion-spinner name="crescent"></ion-spinner>
+            <ion-label>Loading cities...</ion-label>
+          </ion-item>
+          <ion-item *ngIf="!isLoadingBasicCities && filteredBasicCitiesList.length === 0" class="empty-item">
+            <ion-label>No cities found</ion-label>
+          </ion-item>
+          <ion-item 
+            *ngFor="let city of filteredBasicCitiesList" 
+            button="true" 
+            (click)="selectCity(city, 'basic')"
+            [class.selected]="profileData.currentCity === city.id">
+            <ion-label>{{city.cityname}}</ion-label>
+            <ion-icon name="checkmark" slot="end" *ngIf="profileData.currentCity === city.id" color="primary"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Preferred State Selection Modal with Search -->
+  <ion-modal #stateModal trigger="open-state-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancelStateModal('preferred')" color="medium">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Select State</ion-title>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar 
+            placeholder="Search states..." 
+            (ionInput)="filterStates($event, 'preferred')"
+            [value]="stateSearchTerm"
+            data-testid="state-search">
+          </ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item *ngIf="isLoadingStates" class="loading-item">
+            <ion-spinner name="crescent"></ion-spinner>
+            <ion-label>Loading states...</ion-label>
+          </ion-item>
+          <ion-item *ngIf="!isLoadingStates && filteredStatesList.length === 0" class="empty-item">
+            <ion-label>No states found</ion-label>
+          </ion-item>
+          <ion-item 
+            *ngFor="let state of filteredStatesList" 
+            button="true" 
+            (click)="selectState(state, 'preferred')"
+            [class.selected]="profileData.preferredState === state.id">
+            <ion-label>{{state.statename}}</ion-label>
+            <ion-icon name="checkmark" slot="end" *ngIf="profileData.preferredState === state.id" color="primary"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Preferred City Selection Modal with Search -->
+  <ion-modal #cityModal trigger="open-city-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancelCityModal('preferred')" color="medium">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Select City</ion-title>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar 
+            placeholder="Search cities..." 
+            (ionInput)="filterCities($event, 'preferred')"
+            [value]="citySearchTerm"
+            data-testid="city-search">
+          </ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item *ngIf="isLoadingCities" class="loading-item">
+            <ion-spinner name="crescent"></ion-spinner>
+            <ion-label>Loading cities...</ion-label>
+          </ion-item>
+          <ion-item *ngIf="!isLoadingCities && filteredCitiesList.length === 0" class="empty-item">
+            <ion-label>No cities found</ion-label>
+          </ion-item>
+          <ion-item 
+            *ngFor="let city of filteredCitiesList" 
+            button="true" 
+            (click)="selectCity(city, 'preferred')"
+            [class.selected]="profileData.preferredCity === city.id">
+            <ion-label>{{city.cityname}}</ion-label>
+            <ion-icon name="checkmark" slot="end" *ngIf="profileData.preferredCity === city.id" color="primary"></ion-icon>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Exams Selection Modal with Search (Multi-select) -->
+  <ion-modal #examsModal trigger="open-exams-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.5, 0.75, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancelExamSelection()" color="medium">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Select Entrance Exams</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="confirmExamSelection()" color="primary" strong="true">Done</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <ion-toolbar>
+          <ion-searchbar 
+            placeholder="Search exams..." 
+            (ionInput)="filterExams($event)"
+            [value]="examSearchTerm"
+            data-testid="exam-search">
+          </ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item *ngIf="isLoadingExams" class="loading-item">
+            <ion-spinner name="crescent"></ion-spinner>
+            <ion-label>Loading exams...</ion-label>
+          </ion-item>
+          <ion-item *ngIf="!isLoadingExams && filteredExamsList.length === 0" class="empty-item">
+            <ion-label>No exams found</ion-label>
+          </ion-item>
+          <ion-item 
+            *ngFor="let exam of filteredExamsList" 
+            button="true" 
+            (click)="toggleExamSelection(exam)">
+            <ion-checkbox 
+              slot="start" 
+              [checked]="isExamSelected(exam)">
+            </ion-checkbox>
+            <ion-label>{{exam.title}}</ion-label>
+          </ion-item>
+        </ion-list>
+        <div class="selected-count" *ngIf="tempSelectedExams.length > 0">
+          <ion-chip color="primary">
+            <ion-label>{{tempSelectedExams.length}} exam(s) selected</ion-label>
+          </ion-chip>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
 
+<ion-footer>
+  <ion-row>
+    <ion-tab-button class="botmtabset" routerLink="/tabs/tabs/tab1">
+      <ion-icon name="home" style="font-size:20px; color:black !important"></ion-icon>
+      <ion-label style="color:black !important">Home</ion-label>
+    </ion-tab-button>
 
-<ion-footer class="main-footer">
-  <ion-toolbar>
+    <ion-tab-button class="botmtabset" tab="tab2" routerLink="/tabs/tabs/tab2">
+      <ion-icon name="search-outline" style="font-size:20px; color:black !important"></ion-icon>
+      <ion-label style="color:black !important">Search</ion-label>
+    </ion-tab-button>
 
-    <div class="footer-tabs">
+    <ion-tab-button class="botmtabset" routerLink="/tabs/tabs/tab3">
+      <ion-icon name="albums-outline" style="font-size:20px; color:black !important"></ion-icon>
+      <ion-label style="color:black !important">Recommended</ion-label>
+    </ion-tab-button>
 
-      <div class="footer-btn" routerLink="/tabs/tabs/tab1">
-        <ion-icon name="home"></ion-icon>
-        <span>Home</span>
-      </div>
+    <ion-tab-button class="botmtabset" routerLink="/tabs/tabs/tab4">
+      <ion-icon name="bookmark-outline" style="font-size:20px; color:black !important"></ion-icon>
+      <ion-label style="color:black !important">Shortlist</ion-label>
+    </ion-tab-button>
 
-      <div class="footer-btn" routerLink="/tabs/tabs/tab2">
-        <ion-icon name="search-outline"></ion-icon>
-        <span>Search</span>
-      </div>
-
-      <div class="footer-btn" routerLink="/tabs/tabs/tab3">
-        <ion-icon name="albums-outline"></ion-icon>
-        <span>Recommended</span>
-      </div>
-
-      <div class="footer-btn" routerLink="/tabs/tabs/tab4">
-        <ion-icon name="bookmark-outline"></ion-icon>
-        <span>Shortlist</span>
-      </div>
-
-      <div class="footer-btn" routerLink="/tabs/tabs/tab5">
-        <ion-icon name="chatbox-outline"></ion-icon>
-        <span>Assistant</span>
-      </div>
-
-    </div>
-
-  </ion-toolbar>
+    <ion-tab-button class="botmtabset" routerLink="/tabs/tabs/tab5">
+      <ion-icon name="chatbox-outline" style="font-size:20px; color:black !important"></ion-icon>
+      <ion-label style="color:black !important">Assistant</ion-label>
+    </ion-tab-button>
+  </ion-row>
 </ion-footer>

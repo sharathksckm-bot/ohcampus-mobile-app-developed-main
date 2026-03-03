@@ -933,6 +933,23 @@ public voteAnswere(action,answer_id,user_id): Observable<any> {
           );
       }
 
+      // ==================== NEW FEATURES API METHODS ====================
+      
+      // Exam Alerts API
+      public getExamAlerts(): Observable<any> {
+        return this.httpClient.get<any>(this.baseUrl + 'alerts/list',
+          this.httpOptions).pipe(retry(0), catchError(this.handleError)
+          );
+      }
+
+      public getExamAlertsByUser(userId: string): Observable<any> {
+        return this.httpClient.get<any>(this.baseUrl + 'alerts/user/' + userId,
+          this.httpOptions).pipe(retry(0), catchError(this.handleError)
+          );
+      }
+
+      // ==================== END NEW FEATURES API METHODS ====================
+
 
 }
 

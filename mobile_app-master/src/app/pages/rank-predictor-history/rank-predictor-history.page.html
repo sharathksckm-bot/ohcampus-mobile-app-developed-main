@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="history-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Prediction History</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirmClearHistory()" *ngIf="predictions.length > 0" data-testid="clear-history-btn">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content data-testid="rank-predictor-history-page">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading history...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && predictions.length === 0">
+    <ion-icon name="time-outline"></ion-icon>
+    <h3>No Predictions Yet</h3>
+    <p>Your rank predictions will appear here</p>
+    <ion-button fill="solid" (click)="goToPredictor()">
+      <ion-icon name="analytics-outline" slot="start"></ion-icon>
+      Predict Your Rank
+    </ion-button>
+  </div>
+
+  <!-- History List -->
+  <div class="history-list" *ngIf="!isLoading && predictions.length > 0">
+    <div class="history-header">
+      <h2>
+        <ion-icon name="time-outline"></ion-icon>
+        Your Predictions
+      </h2>
+      <span class="count">{{ predictions.length }} {{ predictions.length === 1 ? 'prediction' : 'predictions' }}</span>
+    </div>
+
+    <ion-card *ngFor="let prediction of predictions" 
+              class="prediction-card"
+              [attr.data-testid]="'prediction-card-' + prediction.id">
+      <ion-card-content>
+        <div class="card-header">
+          <div class="exam-info">
+            <div class="exam-icon" [style.background-color]="prediction.exam.color + '20'">
+              <ion-icon [name]="prediction.exam.icon" [style.color]="prediction.exam.color"></ion-icon>
+            </div>
+            <div class="exam-details">
+              <h4>{{ prediction.exam.exam_name }}</h4>
+              <span class="date">{{ prediction.created_at | date:'MMM d, yyyy h:mm a' }}</span>
+            </div>
+          </div>
+          <ion-button fill="clear" size="small" (click)="deletePrediction($event, prediction.id)" data-testid="delete-prediction-btn">
+            <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+        
+        <div class="rank-display">
+          <div class="rank-info">
+            <span class="rank-label">Predicted Rank</span>
+            <span class="rank-value" [style.color]="prediction.exam.color">{{ prediction.predicted_rank | number }}</span>
+          </div>
+          <div class="range-badge">
+            {{ prediction.rank_range_low | number }} - {{ prediction.rank_range_high | number }}
+          </div>
+        </div>
+        
+        <div class="input-summary">
+          <span *ngFor="let item of getInputSummary(prediction); let last = last">
+            {{ item.label }}: {{ item.value }}{{ !last ? ' • ' : '' }}
+          </span>
+        </div>
+        
+        <ion-button expand="block" fill="outline" size="small" (click)="repeatPrediction(prediction)">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Predict Again
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

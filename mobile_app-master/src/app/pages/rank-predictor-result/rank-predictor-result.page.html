@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" data-testid="result-back-btn">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Prediction Result</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToHome()" data-testid="home-btn">
+        <ion-icon name="home-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="shareResult()" data-testid="share-btn">
+        <ion-icon name="share-social-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content data-testid="rank-predictor-result-page">
+  <!-- No Result State -->
+  <div class="empty-state" *ngIf="!prediction">
+    <ion-icon name="analytics-outline"></ion-icon>
+    <h3>No Prediction Data</h3>
+    <p>Please predict your rank first</p>
+    <ion-button fill="outline" (click)="goToPredictor()">
+      Predict Now
+    </ion-button>
+  </div>
+
+  <!-- Result Content -->
+  <div class="result-content" *ngIf="prediction">
+    <!-- Success Animation Header -->
+    <div class="success-header">
+      <div class="success-icon">
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </div>
+      <h1>Rank Predicted!</h1>
+      <p>Based on {{ prediction.exam.exam_name }} previous year data</p>
+    </div>
+
+    <!-- Rank Card -->
+    <div class="rank-card">
+      <div class="rank-label">Your Predicted Rank</div>
+      <div class="rank-value" [style.color]="prediction.exam.color">
+        {{ prediction.predicted_rank | number }}
+      </div>
+      <div class="rank-range">
+        Expected Range: {{ prediction.rank_range_low | number }} - {{ prediction.rank_range_high | number }}
+      </div>
+    </div>
+
+    <!-- Score Summary -->
+    <div class="score-summary">
+      <h3>
+        <ion-icon name="document-text-outline"></ion-icon>
+        Your Inputs
+      </h3>
+      <div class="score-grid">
+        <div class="score-item" *ngFor="let item of inputItems">
+          <span class="score-label">{{ item.label }}</span>
+          <span class="score-value">{{ item.value }}</span>
+        </div>
+        <div class="score-item total" *ngIf="prediction.exam.calculation_type === 'formula'">
+          <span class="score-label">Calculated Score</span>
+          <span class="score-value">{{ prediction.calculated_score }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exam Info -->
+    <div class="exam-info-card">
+      <div class="exam-icon" [style.background-color]="prediction.exam.color + '20'">
+        <ion-icon [name]="prediction.exam.icon" [style.color]="prediction.exam.color"></ion-icon>
+      </div>
+      <div class="exam-details">
+        <h4>{{ prediction.exam.exam_name }}</h4>
+        <ion-badge [style.--background]="prediction.exam.color">{{ prediction.exam.category }}</ion-badge>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <p>
+        <strong>Note:</strong> This is an estimated rank based on previous year's data. 
+        Actual ranks may vary depending on several factors including the number of applicants, 
+        difficulty level, and cutoff trends.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <ion-button expand="block" (click)="predictAgain()" data-testid="predict-again-btn">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Predict Again
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="viewHistory()" data-testid="view-history-btn">
+        <ion-icon name="time-outline" slot="start"></ion-icon>
+        View History
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="tryAnotherExam()" data-testid="another-exam-btn">
+        <ion-icon name="school-outline" slot="start"></ion-icon>
+        Try Another Exam
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

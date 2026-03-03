@@ -1,0 +1,236 @@
+.alerts-content {
+  --background: #f5f7fa;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  background: white;
+  border-bottom: 1px solid #eee;
+  
+  ion-chip {
+    flex-shrink: 0;
+    --background: #f0f0f0;
+    
+    &[color="primary"] {
+      --background: #0083dc;
+      --color: white;
+    }
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.custom-spinner-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  img.custom-spinner-icon {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    z-index: 2;
+    border-radius: 50%;
+  }
+  
+  ion-spinner.custom-spinner {
+    width: 80px;
+    height: 80px;
+    color: #0083dc;
+  }
+}
+
+.alerts-list {
+  padding: 12px;
+}
+
+.no-alerts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  
+  ion-icon {
+    font-size: 80px;
+    color: #ddd;
+    margin-bottom: 16px;
+  }
+  
+  h3 {
+    margin: 0 0 8px 0;
+    color: #666;
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  p {
+    margin: 0 0 20px 0;
+    color: #999;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  ion-button {
+    --border-radius: 8px;
+  }
+}
+
+.alert-card {
+  margin: 0 0 12px 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  
+  &.has-link {
+    cursor: pointer;
+    
+    &:active {
+      transform: scale(0.98);
+      opacity: 0.95;
+    }
+  }
+  
+  ion-card-header {
+    padding: 16px;
+    
+    .alert-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .alert-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      
+      ion-icon {
+        font-size: 22px;
+        color: white;
+      }
+      
+      &.type-registration {
+        background: linear-gradient(135deg, #4CAF50, #66BB6A);
+      }
+      
+      &.type-counseling {
+        background: linear-gradient(135deg, #9C27B0, #BA68C8);
+      }
+      
+      &.type-admit {
+        background: linear-gradient(135deg, #2196F3, #64B5F6);
+      }
+      
+      &.type-deadline {
+        background: linear-gradient(135deg, #FF5722, #FF8A65);
+      }
+      
+      &.type-announcement {
+        background: linear-gradient(135deg, #FF9800, #FFB74D);
+      }
+      
+      &.type-general {
+        background: linear-gradient(135deg, #607D8B, #90A4AE);
+      }
+    }
+    
+    .alert-meta {
+      flex: 1;
+      min-width: 0;
+      
+      ion-card-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 4px 0;
+        line-height: 1.3;
+      }
+      
+      .alert-time {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: #999;
+        margin: 0;
+        
+        ion-icon {
+          font-size: 14px;
+        }
+      }
+    }
+    
+    .link-indicator {
+      color: #0083dc;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+  }
+  
+  ion-card-content {
+    padding: 0 16px 12px;
+    
+    .alert-description {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+  
+  .alert-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px 16px;
+    
+    ion-chip {
+      margin: 0;
+      height: 26px;
+      font-size: 11px;
+      
+      ion-label {
+        padding: 0 4px;
+      }
+    }
+  }
+}
+
+ion-footer {
+  ion-row {
+    background: #eceff6;
+    
+    ion-tab-button {
+      --padding-start: 1px;
+    }
+  }
+}
+
+.botmtabset {
+  font-size: 10px;
+}
