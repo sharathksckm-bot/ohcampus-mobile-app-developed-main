@@ -24,8 +24,6 @@ export class GloginformPage implements OnInit {
   username: string;
   userData: any;
   public loading: any;
-  isGoogleLogin: boolean = false;
-  user: any;
   constructor(
     private platform: Platform,
     private googlePlus: GooglePlus,

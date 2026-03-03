@@ -25,9 +25,8 @@ export class GmailformPage implements OnInit {
   otp: string[] = ['', '', '', '', '', ''];
   Otp: string;
   email: string;
-  isGoogleLogin: boolean = false;
-  user: any;
  
+
   showOtpSection = false;
   response_data: any;
   constructor(
@@ -111,7 +110,8 @@ glogin() {
 //   }
 // }
 async googleSignIn() {
-  if (this.platform.is('android')) {
+  // Check if running on mobile device
+  if (this.platform.is('android') || this.platform.is('ios')) {
     const loading = await this.loadingController.create({
       message: `
         <div class="custom-spinner-container">
@@ -181,6 +181,30 @@ async googleSignIn() {
       
       })
     }
+  } else {
+    // Web browser - show message and use demo mode
+    await this.presentToast('Google Sign-In requires the mobile app. Using demo mode...', 'warning');
+    
+    // Set up demo user data
+    const demoUser = {
+      id: 'demo_user_1',
+      f_name: 'Demo User',
+      email: 'demo@ohcampus.com',
+      phone: '9876543210',
+      token: 'demo_token_123'
+    };
+    localStorage.setItem('response_data', JSON.stringify([demoUser]));
+    localStorage.setItem('user', JSON.stringify({
+      id: demoUser.id,
+      name: demoUser.f_name,
+      email: demoUser.email,
+      phone: demoUser.phone
+    }));
+    
+    // Navigate to course selection
+    setTimeout(() => {
+      this.router.navigateByUrl('/preferedcourses');
+    }, 1500);
   }
 }
 async presentToast(message: string, color: string) {
